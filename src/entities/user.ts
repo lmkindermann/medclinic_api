@@ -5,7 +5,7 @@ import {
     CreateDateColumn
 } from 'typeorm';
 
-//Enum para representar as roles dos usuários
+//Enum para representar as categorias (roles) dos usuários
 export enum UsuarioRole {
     PACIENTE = 'PACIENTE',
     MEDICO = 'MEDICO',
@@ -32,7 +32,7 @@ export class Usuario {
         enum: UsuarioRole,
         default: UsuarioRole.PACIENTE
     })
-    role!: UsuarioRole;
+    categoria!: UsuarioRole;
 
     @CreateDateColumn()
     criadoEm!: Date;    

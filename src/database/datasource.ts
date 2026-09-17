@@ -1,10 +1,7 @@
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import dotenv from 'dotenv'
-//import { Usuario } from './entities/Usuario'
-//import { Paciente } from './entities/Paciente'
-//import { Medico } from './entities/Medico'
-//import { Consulta } from './entities/Consulta'
+import { Usuario } from '../entities/user'
 
 dotenv.config()
 
@@ -17,6 +14,6 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_DATABASE,
     ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
     synchronize: true,
-    logging: false
-    //entities: [Usuario, Paciente, Medico, Consulta]
+    logging: false,
+    entities: [Usuario]
 })
