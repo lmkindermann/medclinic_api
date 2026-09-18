@@ -6,4 +6,4 @@ const userController = new UserController()
 
 userRoutes.get("/me", (req, res) => userController.me(req, res))
 
-export { userRoutes }
+export default userRoutes

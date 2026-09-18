@@ -1,0 +1,25 @@
+import 'reflect-metadata';
+import express, { Request, Response } from 'express';
+import dotenv from 'dotenv';
+import { AppDataSource } from './database/datasource';
+import routes from './routes';
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 3333;
+
+app.use(routes);
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log('Conexão com o banco de dados estabelecida com sucesso!');
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Erro ao conectar com o banco de dados:', error);
+  });

@@ -6,4 +6,4 @@ const adminController = new AdminController()
 
 adminRoutes.get("/ping", (req, res) => adminController.ping(req, res))
 
-export { adminRoutes }
+export default adminRoutes
