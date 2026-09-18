@@ -32,12 +32,13 @@ export class AuthController{
             nome,
             email,
             senha: senhaHash,
-            categoria: UsuarioRole.PACIENTE
+            categoria: UsuarioRole.ATENDENTE
         })
 
         await usuarioRepository.save(usuario)
 
         return res.status(201).json({
+            id: usuario.id,
             nome: usuario.nome,
             email: usuario.email,
             categoria: usuario.categoria
@@ -62,7 +63,7 @@ export class AuthController{
             return res.status(401).json({erro: "Credenciais Inválidas"})
         }
 
-        const token = gerarToken({sub: usuario.id, role: usuario.categoria})
+        const token = gerarToken({id: usuario.id, role: usuario.categoria})
 
         return res.json({
             token,

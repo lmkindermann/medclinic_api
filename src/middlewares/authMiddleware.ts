@@ -1,15 +1,20 @@
 import { Request, Response, NextFunction } from "express"
 import { verificarToken, TokenPayload } from "../utils/jwt"
 
-declare global {
+/* declare global {
     namespace Express {
         interface Request {
             usuario?: TokenPayload
         }
     }
+} */
+
+export interface AuthenticatedRequest extends Request {
+  usuario?: TokenPayload;
 }
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction){
+//Request
+export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction){ 
     const authHeader = req.headers.authorization
 
     if(!authHeader){

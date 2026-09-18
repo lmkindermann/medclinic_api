@@ -19,7 +19,7 @@ export class Usuario {
     @Column("varchar")
     nome!: string;
 
-    @Column("varchar")
+    @Column("varchar", { unique: true })
     email!: string;
 
     @Column("varchar")

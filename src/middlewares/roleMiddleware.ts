@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express"
+import { Response, NextFunction } from "express"
+import { AuthenticatedRequest } from './authMiddleware';
 import { UsuarioRole } from "../entities/user"
 
 export function roleMiddleware(...rolesPermitidas: UsuarioRole[]){
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if(!req.usuario){
             return res.status(401).json({erro: "Não autenticado"})
         }
