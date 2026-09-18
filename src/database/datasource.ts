@@ -5,6 +5,7 @@ import { Usuario } from '../entities/user'
 
 dotenv.config()
 
+// Opção 1 - Usando Aiven (remoto)
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: process.env.DB_HOST,

@@ -8,10 +8,10 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
-    "target": "ES2021",
+    "target": "es2020",
     "types": [],
     // For nodejs:
-    "lib": ["ES2021"],
+    "lib": ["ES2020"],
     // "types": ["node"],
     // and npm install -D @types/node
 
