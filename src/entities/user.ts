@@ -7,8 +7,7 @@ import {
 
 //Enum para representar as categorias (roles) dos usuários
 export enum UsuarioRole {
-    PACIENTE = 'PACIENTE',
-    MEDICO = 'MEDICO',
+    ATENDENTE = 'ATENDENTE',
     ADMIN = 'ADMIN'
 }
 
@@ -30,7 +29,7 @@ export class Usuario {
     @Column({
         type: "enum",
         enum: UsuarioRole,
-        default: UsuarioRole.PACIENTE
+        default: UsuarioRole.ATENDENTE
     })
     categoria!: UsuarioRole;
 

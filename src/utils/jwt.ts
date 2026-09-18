@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { UsuarioRole } from '../entities/user'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export interface TokenPayload {
     sub: string,
