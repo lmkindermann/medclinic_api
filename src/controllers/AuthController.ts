@@ -21,6 +21,11 @@ export class AuthController{
             return res.status(400).json({erro: "E-mail já cadastrado"})
         }
 
+        const emailFormatado = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        if(!emailFormatado){
+            return res.status(400).json({erro: "E-mail inválido"})
+        }
+
         const senhaHash = await bcrypt.hash(senha, 10)
 
         const usuario = usuarioRepository.create({
