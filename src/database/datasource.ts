@@ -2,10 +2,11 @@ import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 import dotenv from 'dotenv'
 import { Usuario } from '../entities/user'
+import { Especialidade } from '../entities/especialidade'
 
 dotenv.config()
 
-// Opção 1 - Usando Aiven (remoto)
+// Ajustar no dotenv se estiver usando o Postgres no Aiven ou no pgAdmin4 local
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: process.env.DB_HOST,
@@ -16,5 +17,5 @@ export const AppDataSource = new DataSource({
     ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
     synchronize: true,
     logging: false,
-    entities: [Usuario]
+    entities: [Usuario, Especialidade]
 })
