@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Medico } from './medico';
 
 @Entity('especialidades')
 export class Especialidade {
@@ -10,4 +11,7 @@ export class Especialidade {
 
     @Column('varchar', { nullable: true })
     descricao?: string | null;
+
+    @OneToMany(() => Medico, medico => medico.especialidade)
+    medicos!: Medico[];
 }
