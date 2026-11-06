@@ -44,4 +44,9 @@ export class ConsultaRepository {
         const consulta = this.repository.create(dados);
         return this.repository.save(consulta);
     }
+
+    async atualizar(consulta: Consulta): Promise<Consulta> {
+        return this.repository.save(consulta);
+    }
+
 }

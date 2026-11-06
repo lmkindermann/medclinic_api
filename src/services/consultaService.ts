@@ -1,4 +1,4 @@
-import { Consulta } from '../entities/consulta';
+import { Consulta, ConsultaStatus } from '../entities/consulta';
 import { ConsultaRepository } from '../repositories/consultaRepository';
 import { MedicoRepository } from '../repositories/medicoRepository';
 import { PacienteRepository } from '../repositories/pacienteRepository';
@@ -82,6 +82,49 @@ export class ConsultaService {
         }
 
         return consulta;
+    }
+
+    async realizarAtendimento(
+        id: string,
+        observacoes: string
+    ): Promise<Consulta> {
+
+        const consulta = await this.buscarPorId(id);
+
+        if (consulta.status !== ConsultaStatus.AGENDADA) {
+            throw new AppError(
+                'Somente consultas agendadas podem ser realizadas.',
+                400
+            );
+        }
+
+        if (!observacoes || !observacoes.trim()) {
+            throw new AppError(
+                'As observações do atendimento são obrigatórias.',
+                400
+            );
+        }
+
+        consulta.status = ConsultaStatus.REALIZADA;
+        consulta.observacoes = observacoes.trim();
+
+        return this.consultaRepository.atualizar(consulta);
+    }
+
+    async cancelar(id: string): Promise<Consulta> {
+
+        const consulta = await this.buscarPorId(id);
+
+        if (consulta.status !== ConsultaStatus.AGENDADA) {
+            throw new AppError(
+                'Somente consultas agendadas podem ser canceladas.',
+                400
+            );
+        }
+
+        consulta.status = ConsultaStatus.CANCELADA;
+
+        return this.consultaRepository.atualizar(consulta);
     }
 
 }

@@ -74,4 +74,57 @@ export class ConsultaController {
         }
     }
 
+    async realizarAtendimento(req: Request, res: Response) {
+        try {
+            const consulta = await this.consultaService.realizarAtendimento(
+                String(req.params.id),
+                req.body.observacoes
+            );
+
+            return res.status(200).json({
+                mensagem: 'Atendimento realizado com sucesso.',
+                consulta
+            });
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    erro: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                erro: 'Erro interno ao realizar atendimento.'
+            });
+        }
+    }
+
+    async cancelar(req: Request, res: Response) {
+        try {
+            const consulta = await this.consultaService.cancelar(
+                String(req.params.id)
+            );
+
+            return res.status(200).json({
+                mensagem: 'Consulta cancelada com sucesso.',
+                consulta
+            });
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    erro: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                erro: 'Erro interno ao cancelar consulta.'
+            });
+        }
+    }
+
 }

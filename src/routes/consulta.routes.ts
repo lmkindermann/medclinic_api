@@ -31,4 +31,16 @@ consultaRoutes.post(
     (req, res) => consultaController.agendar(req, res)
 );
 
+consultaRoutes.patch(
+    '/:id/atendimento',
+    roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
+    (req, res) => consultaController.realizarAtendimento(req, res)
+);
+
+consultaRoutes.patch(
+    '/:id/cancelamento',
+    roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
+    (req, res) => consultaController.cancelar(req, res)
+);
+
 export default consultaRoutes;
