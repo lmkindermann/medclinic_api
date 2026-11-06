@@ -5,6 +5,7 @@ import userRoutes from "./user.routes"
 import especialidadeRoutes from './especialidade.routes';
 import medicoRoutes from './medico.routes';
 import pacienteRoutes from './paciente.routes';
+import consultaRoutes from './consulta.routes';
 
 const routes = Router()
 
@@ -14,5 +15,6 @@ routes.use("/medicos", medicoRoutes)
 routes.use("/especialidades", especialidadeRoutes)
 routes.use("/user", userRoutes)
 routes.use('/pacientes', pacienteRoutes);
+routes.use('/consultas', consultaRoutes);
 
 export default routes

@@ -5,6 +5,7 @@ import { Usuario } from '../entities/user'
 import { Especialidade } from '../entities/especialidade'
 import { Medico } from '../entities/medico';
 import { Paciente } from '../entities/paciente';
+import { Consulta } from '../entities/consulta';
 
 dotenv.config()
 
@@ -19,5 +20,5 @@ export const AppDataSource = new DataSource({
     ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
     synchronize: true,
     logging: false,
-    entities: [Usuario, Especialidade, Medico, Paciente],
+    entities: [Usuario, Especialidade, Medico, Paciente, Consulta],
 })
