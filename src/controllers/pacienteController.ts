@@ -6,12 +6,36 @@ export class PacienteController {
 
     private service = new PacienteService();
 
-    async listar(req: Request, res: Response): Promise<void> {
+    /* async listar(req: Request, res: Response): Promise<void> {
         try {
             const pacientes = await this.service.listar();
             res.status(200).json(pacientes);
         } catch (error) {
             this.tratarErro(error, res);
+        }
+    } */
+    async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            const filtros = {
+                nome: req.query.nome as string
+            };
+
+            const pacientes = await this.service.listar(filtros);
+
+            return res.status(200).json(pacientes);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao listar pacientes.'
+            });
         }
     }
 

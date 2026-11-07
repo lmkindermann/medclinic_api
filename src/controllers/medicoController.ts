@@ -7,7 +7,7 @@ export class MedicoController {
     private service = new MedicoService();
 
     // Listar médicos
-    async listar(req: Request, res: Response): Promise<Response> {
+    /* async listar(req: Request, res: Response): Promise<Response> {
         try {
             const medicos = await this.service.listar();
 
@@ -15,6 +15,31 @@ export class MedicoController {
 
         } catch (error) {
             return this.tratarErro(error, res);
+        }
+    } */
+    async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            const filtros = {
+                nome: req.query.nome as string,
+                especialidadeId: req.query.especialidadeId as string
+            };
+
+            const medicos = await this.service.listar(filtros);
+
+            return res.status(200).json(medicos);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao listar médicos.'
+            });
         }
     }
 

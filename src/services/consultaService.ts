@@ -70,8 +70,83 @@ export class ConsultaService {
         });
     }
 
-    async listar(): Promise<Consulta[]> {
+    /* async listar(): Promise<Consulta[]> {
         return this.consultaRepository.listar();
+    } */
+    async listar(filtros: {
+        dataInicial?: string;
+        dataFinal?: string;
+        status?: string;
+        medicoId?: string;
+        pacienteId?: string;
+    }): Promise<Consulta[]> {
+
+        const filtrosValidados: {
+            dataInicial?: Date;
+            dataFinal?: Date;
+            status?: ConsultaStatus;
+            medicoId?: string;
+            pacienteId?: string;
+        } = {};
+
+        if (filtros.dataInicial) {
+            const dataInicial = new Date(filtros.dataInicial);
+
+            if (isNaN(dataInicial.getTime())) {
+                throw new AppError('Data inicial inválida.', 400);
+            }
+
+            filtrosValidados.dataInicial = dataInicial;
+        }
+
+        /* if (filtros.dataFinal) {
+            const dataFinal = new Date(filtros.dataFinal);
+
+            if (isNaN(dataFinal.getTime())) {
+                throw new AppError('Data final inválida.', 400);
+            }
+
+            filtrosValidados.dataFinal = dataFinal;
+        } */
+        if (filtros.dataFinal) {
+            const dataFinal = new Date(
+                /^\d{4}-\d{2}-\d{2}$/.test(filtros.dataFinal)
+                    ? `${filtros.dataFinal}T23:59:59.999`
+                    : filtros.dataFinal
+            );
+
+            if (isNaN(dataFinal.getTime())) {
+                throw new AppError('Data final inválida.', 400);
+            }
+
+            filtrosValidados.dataFinal = dataFinal;
+        }
+
+        if (
+            filtrosValidados.dataInicial &&
+            filtrosValidados.dataFinal &&
+            filtrosValidados.dataInicial > filtrosValidados.dataFinal
+        ) {
+            throw new AppError('A data inicial não pode ser posterior à data final.', 400);
+        }
+
+        if (filtros.status) {
+            if (!Object.values(ConsultaStatus).includes(filtros.status as ConsultaStatus)) {
+                throw new AppError('Status de consulta inválido.', 400);
+            }
+
+            filtrosValidados.status = filtros.status as ConsultaStatus;
+        }
+
+        if (filtros.medicoId) {
+            filtrosValidados.medicoId = filtros.medicoId;
+        }
+
+        if (filtros.pacienteId) {
+            filtrosValidados.pacienteId = filtros.pacienteId;
+        }
+
+        return this.consultaRepository.listar(filtrosValidados);
     }
 
     async buscarPorId(id: string): Promise<Consulta> {

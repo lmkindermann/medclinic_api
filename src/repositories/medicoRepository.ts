@@ -6,7 +6,7 @@ export class MedicoRepository {
     private repository = AppDataSource.getRepository(Medico);
 
     // Listar todos os médicos, incluindo suas especialidades
-    async listar(): Promise<Medico[]> {
+    /* async listar(): Promise<Medico[]> {
         return this.repository.find({
             relations: {
                 especialidade: true
@@ -15,6 +15,31 @@ export class MedicoRepository {
                 nome: 'ASC'
             }
         });
+    } */
+    async listar(filtros?: {
+        nome?: string;
+        especialidadeId?: string;
+    }): Promise<Medico[]> {
+
+        const query = this.repository
+            .createQueryBuilder('medico')
+            .leftJoinAndSelect('medico.especialidade', 'especialidade');
+
+        if (filtros?.nome) {
+            query.andWhere('medico.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        if (filtros?.especialidadeId) {
+            query.andWhere('especialidade.id = :especialidadeId', {
+                especialidadeId: filtros.especialidadeId
+            });
+        }
+
+        return query
+            .orderBy('medico.nome', 'ASC')
+            .getMany();
     }
 
     // Buscar médico pelo ID

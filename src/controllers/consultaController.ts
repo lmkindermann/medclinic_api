@@ -35,7 +35,7 @@ export class ConsultaController {
         }
     }
 
-    async listar(req: Request, res: Response): Promise<void> {
+    /* async listar(req: Request, res: Response): Promise<void> {
         try {
             const consultas = await this.consultaService.listar();
 
@@ -45,6 +45,34 @@ export class ConsultaController {
             console.error('Erro ao listar consultas:', erro);
 
             res.status(500).json({
+                mensagem: 'Erro interno ao listar consultas.'
+            });
+        }
+    } */
+    async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            const filtros = {
+                dataInicial: req.query.dataInicial as string,
+                dataFinal: req.query.dataFinal as string,
+                status: req.query.status as string,
+                medicoId: req.query.medicoId as string,
+                pacienteId: req.query.pacienteId as string
+            };
+
+            const consultas = await this.consultaService.listar(filtros);
+
+            return res.status(200).json(consultas);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
                 mensagem: 'Erro interno ao listar consultas.'
             });
         }

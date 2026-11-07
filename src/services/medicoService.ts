@@ -20,8 +20,32 @@ export class MedicoService {
     private medicoRepository = new MedicoRepository();
     private especialidadeRepository = new EspecialidadeRepository();
 
-    async listar(): Promise<Medico[]> {
+    /* async listar(): Promise<Medico[]> {
         return this.medicoRepository.listar();
+    } */
+    async listar(filtros: {
+        nome?: string;
+        especialidadeId?: string;
+    }): Promise<Medico[]> {
+
+        const filtrosValidados: {
+            nome?: string;
+            especialidadeId?: string;
+        } = {};
+
+        if (filtros.nome) {
+            filtrosValidados.nome = filtros.nome.trim();
+
+            if (!filtrosValidados.nome) {
+                throw new AppError('Nome inválido.', 400);
+            }
+        }
+
+        if (filtros.especialidadeId) {
+            filtrosValidados.especialidadeId = filtros.especialidadeId;
+        }
+
+        return this.medicoRepository.listar(filtrosValidados);
     }
 
     async buscarPorId(id: string): Promise<Medico> {

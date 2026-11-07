@@ -5,12 +5,29 @@ export class PacienteRepository {
 
     private repository = AppDataSource.getRepository(Paciente);
 
-    async listar(): Promise<Paciente[]> {
+    /* async listar(): Promise<Paciente[]> {
         return this.repository.find({
             order: {
                 nome: 'ASC'
             }
         });
+    } */
+    async listar(filtros?: {
+        nome?: string;
+    }): Promise<Paciente[]> {
+
+        const query = this.repository
+            .createQueryBuilder('paciente');
+
+        if (filtros?.nome) {
+            query.andWhere('paciente.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        return query
+            .orderBy('paciente.nome', 'ASC')
+            .getMany();
     }
 
     async buscarPorId(id: string): Promise<Paciente | null> {

@@ -68,8 +68,26 @@ export class PacienteService {
     }
 
     // Listar e consultar pacientes
-    async listar(): Promise<Paciente[]> {
+    /* async listar(): Promise<Paciente[]> {
         return this.repository.listar();
+    } */
+    async listar(filtros: {
+        nome?: string;
+    }): Promise<Paciente[]> {
+
+        const filtrosValidados: {
+            nome?: string;
+        } = {};
+
+        if (filtros.nome) {
+            filtrosValidados.nome = filtros.nome.trim();
+
+            if (!filtrosValidados.nome) {
+                throw new AppError('Nome inválido.', 400);
+            }
+        }
+
+        return this.repository.listar(filtrosValidados);
     }
 
     async buscarPorId(id: string): Promise<Paciente> {
