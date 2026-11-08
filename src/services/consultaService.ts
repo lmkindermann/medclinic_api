@@ -220,4 +220,16 @@ export class ConsultaService {
         return this.consultaRepository.atualizar(consulta);
     }
 
+    async relatorioPorStatus() {
+        return await this.consultaRepository.relatorioPorStatus();
+    }
+
+    async relatorioPorMedico() {
+        return await this.consultaRepository.relatorioPorMedico();
+    }
+
+    async relatorioPacientesAgendados() {
+        return await this.consultaRepository.relatorioPacientesAgendados();
+    }
+
 }

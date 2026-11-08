@@ -100,4 +100,8 @@ export class EspecialidadeService {
         await this.repository.excluir(especialidade);
     }
 
+    async relatorioPorMedico() {
+        return await this.repository.relatorioPorMedico();
+    }
+
 }

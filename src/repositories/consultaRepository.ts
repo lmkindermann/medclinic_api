@@ -155,4 +155,58 @@ export class ConsultaRepository {
         return this.repository.save(consulta);
     }
 
+    async relatorioPorStatus() {
+        const resultado = await this.repository
+            .createQueryBuilder('consulta')
+            .select('consulta.status', 'status')
+            .addSelect('COUNT(consulta.id)', 'total')
+            .groupBy('consulta.status')
+            .orderBy('consulta.status', 'ASC')
+            .getRawMany();
+
+        return resultado.map(item => ({
+            status: item.status,
+            total: Number(item.total)
+        }));
+    }
+
+    async relatorioPorMedico() {
+        const resultado = await this.repository
+            .createQueryBuilder('consulta')
+            .innerJoin('consulta.medico', 'medico')
+            .select('medico.id', 'medicoId')
+            .addSelect('medico.nome', 'nome')
+            .addSelect('COUNT(consulta.id)', 'total')
+            .groupBy('medico.id')
+            .addGroupBy('medico.nome')
+            .orderBy('medico.nome', 'ASC')
+            .getRawMany();
+
+        return resultado.map(item => ({
+            medicoId: item.medicoId,
+            nome: item.nome,
+            total: Number(item.total)
+        }));
+    }
+
+    async relatorioPacientesAgendados() {
+        const resultado = await this.repository
+            .createQueryBuilder('consulta')
+            .innerJoin('consulta.paciente', 'paciente')
+            .select('paciente.id', 'pacienteId')
+            .addSelect('paciente.nome', 'nome')
+            .addSelect('COUNT(consulta.id)', 'total')
+            .where('consulta.status = :status', { status: ConsultaStatus.AGENDADA })
+            .groupBy('paciente.id')
+            .addGroupBy('paciente.nome')
+            .orderBy('paciente.nome', 'ASC')
+            .getRawMany();
+
+        return resultado.map(item => ({
+            pacienteId: item.pacienteId,
+            nome: item.nome,
+            total: Number(item.total)
+        }));
+    }
+
 }

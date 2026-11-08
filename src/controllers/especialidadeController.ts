@@ -124,4 +124,26 @@ export class EspecialidadeController {
             erro: 'Erro interno do servidor.'
         });
     }
+
+    async relatorioPorMedico(req: Request, res: Response): Promise<Response> {
+        try {
+            const resultado = await this.service.relatorioPorMedico();
+
+            return res.status(200).json(resultado);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao gerar relatório de médicos por especialidade.'
+            });
+        }
+    }
+
 }

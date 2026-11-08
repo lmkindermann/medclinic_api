@@ -185,4 +185,67 @@ export class ConsultaController {
         }
     }
 
+    async relatorioPorStatus(req: Request, res: Response): Promise<Response> {
+        try {
+            const resultado = await this.consultaService.relatorioPorStatus();
+
+            return res.status(200).json(resultado);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao gerar relatório de consultas por status.'
+            });
+        }
+    }
+
+    async relatorioPorMedico(req: Request, res: Response): Promise<Response> {
+        try {
+            const resultado = await this.consultaService.relatorioPorMedico();
+
+            return res.status(200).json(resultado);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao gerar relatório de consultas por médico.'
+            });
+        }
+    }
+
+    async relatorioPacientesAgendados(req: Request, res: Response): Promise<Response> {
+        try {
+            const resultado = await this.consultaService.relatorioPacientesAgendados();
+
+            return res.status(200).json(resultado);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao gerar relatório de pacientes com consultas agendadas.'
+            });
+        }
+    }
+
 }

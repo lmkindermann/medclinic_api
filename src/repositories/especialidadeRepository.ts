@@ -47,4 +47,24 @@ export class EspecialidadeRepository {
     async excluir(especialidade: Especialidade): Promise<void> {
         await this.repository.remove(especialidade);
     }
+
+    async relatorioPorMedico() {
+        const resultado = await this.repository
+            .createQueryBuilder('especialidade')
+            .leftJoin('especialidade.medicos', 'medico')
+            .select('especialidade.id', 'especialidadeId')
+            .addSelect('especialidade.nome', 'nome')
+            .addSelect('COUNT(medico.id)', 'total')
+            .groupBy('especialidade.id')
+            .addGroupBy('especialidade.nome')
+            .orderBy('especialidade.nome', 'ASC')
+            .getRawMany();
+
+        return resultado.map(item => ({
+            especialidadeId: item.especialidadeId,
+            nome: item.nome,
+            total: Number(item.total)
+        }));
+    }
+
 }
