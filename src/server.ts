@@ -8,6 +8,7 @@ import swaggerSpec from './config/swagger';
 import logger from './config/logger';
 import { httpLogger } from './middlewares/httpLogger';
 import cors from 'cors';
+import { rateLimiter } from './middlewares/rateLimiter';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const app = express();
 //logger.warn('Mensagem de teste do nível warning.');
 //logger.error('Mensagem de teste do nível error.');
 app.use(cors());
+app.use(rateLimiter);
 app.use(express.json());
 app.use(httpLogger);
 
