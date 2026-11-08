@@ -7,6 +7,7 @@ import swaggerUi = require('swagger-ui-express');
 import swaggerSpec from './config/swagger';
 import logger from './config/logger';
 import { httpLogger } from './middlewares/httpLogger';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const app = express();
 //logger.info('Logger Winston inicializado.');
 //logger.warn('Mensagem de teste do nível warning.');
 //logger.error('Mensagem de teste do nível error.');
-
+app.use(cors());
 app.use(express.json());
 app.use(httpLogger);
 
