@@ -3,6 +3,8 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { AppDataSource } from './database/datasource';
 import routes from './routes';
+import swaggerUi = require('swagger-ui-express');
+import swaggerSpec from './config/swagger';
 
 dotenv.config();
 
@@ -11,6 +13,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3333;
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(routes);
 
 AppDataSource.initialize()
