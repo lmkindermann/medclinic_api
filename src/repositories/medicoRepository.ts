@@ -16,7 +16,7 @@ export class MedicoRepository {
             }
         });
     } */
-    async listar(filtros?: {
+    /* async listar(filtros?: {
         nome?: string;
         especialidadeId?: string;
     }): Promise<Medico[]> {
@@ -40,6 +40,45 @@ export class MedicoRepository {
         return query
             .orderBy('medico.nome', 'ASC')
             .getMany();
+    } */
+    async listar(
+        filtros: {
+            nome?: string;
+            especialidadeId?: string;
+        },
+        page: number,
+        limit: number
+    ): Promise<{
+        registros: Medico[];
+        total: number;
+    }> {
+
+        const query = this.repository
+            .createQueryBuilder('medico')
+            .leftJoinAndSelect('medico.especialidade', 'especialidade');
+
+        if (filtros?.nome) {
+            query.andWhere('medico.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        if (filtros?.especialidadeId) {
+            query.andWhere('especialidade.id = :especialidadeId', {
+                especialidadeId: filtros.especialidadeId
+            });
+        }
+
+        const [registros, total] = await query
+            .orderBy('medico.nome', 'ASC')
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
+
+        return {
+            registros,
+            total
+        };
     }
 
     // Buscar médico pelo ID

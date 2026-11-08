@@ -18,8 +18,14 @@ export class EspecialidadeService {
     private repository = new EspecialidadeRepository();
     private medicoRepository = new MedicoRepository();
 
-    async listar(): Promise<Especialidade[]> {
+    /* async listar(): Promise<Especialidade[]> {
         return this.repository.listar();
+    } */
+    async listar(page: number, limit: number): Promise<{
+        registros: Especialidade[];
+        total: number;
+    }> {
+        return this.repository.listar(page, limit);
     }
 
     async buscarPorId(id: string): Promise<Especialidade> {

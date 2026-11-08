@@ -12,7 +12,7 @@ export class PacienteRepository {
             }
         });
     } */
-    async listar(filtros?: {
+    /* async listar(filtros?: {
         nome?: string;
     }): Promise<Paciente[]> {
 
@@ -28,6 +28,33 @@ export class PacienteRepository {
         return query
             .orderBy('paciente.nome', 'ASC')
             .getMany();
+    } */
+    async listar(
+        filtros: {
+            nome?: string;
+        },
+        page: number,
+        limit: number
+    ): Promise<{
+        registros: Paciente[];
+        total: number;
+    }> {
+        const query = this.repository
+            .createQueryBuilder('paciente');
+
+        if (filtros?.nome) {
+            query.andWhere('paciente.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        const [registros, total] = await query
+            .orderBy('paciente.nome', 'ASC')
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
+
+        return { registros, total };
     }
 
     async buscarPorId(id: string): Promise<Paciente | null> {

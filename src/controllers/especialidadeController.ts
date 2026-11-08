@@ -7,12 +7,63 @@ export class EspecialidadeController {
     private service = new EspecialidadeService();
 
     // GET /especialidades
-    async listar(req: Request, res: Response): Promise<Response> {
+    /* async listar(req: Request, res: Response): Promise<Response> {
         try {
             const especialidades = await this.service.listar();
             return res.status(200).json(especialidades);
         } catch (error) {
             return this.tratarErro(error, res);
+        }
+    } */
+   async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            //const page = Number(req.query.page) || 1;
+            //const limit = Number(req.query.limit) || 10;
+            const pageParam = req.query.page;
+            const limitParam = req.query.limit;
+
+            if (
+                (pageParam !== undefined && typeof pageParam !== 'string') ||
+                (limitParam !== undefined && typeof limitParam !== 'string')
+            ) {
+                throw new AppError('Parâmetros de paginação inválidos.', 400);
+            }
+
+            const page = pageParam === undefined ? 1 : Number(pageParam);
+            const limit = limitParam === undefined ? 10 : Number(limitParam);
+
+            if (!Number.isInteger(page) || page < 1) {
+                throw new AppError('O parâmetro page deve ser um inteiro maior que zero.', 400);
+            }
+
+            if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+                throw new AppError('O parâmetro limit deve ser um inteiro entre 1 e 100.', 400);
+            }
+
+            const resultado = await this.service.listar(page, limit);
+
+            return res.status(200).json({
+                dados: resultado.registros,
+                paginacao: {
+                    paginaAtual: page,
+                    limite: limit,
+                    totalRegistros: resultado.total,
+                    totalPaginas: Math.ceil(resultado.total / limit)
+                }
+            });
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao listar especialidades.'
+            });
         }
     }
 

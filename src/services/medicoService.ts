@@ -23,7 +23,7 @@ export class MedicoService {
     /* async listar(): Promise<Medico[]> {
         return this.medicoRepository.listar();
     } */
-    async listar(filtros: {
+    /* async listar(filtros: {
         nome?: string;
         especialidadeId?: string;
     }): Promise<Medico[]> {
@@ -46,6 +46,41 @@ export class MedicoService {
         }
 
         return this.medicoRepository.listar(filtrosValidados);
+    } */
+    async listar(
+        filtros: {
+            nome?: string;
+            especialidadeId?: string;
+        },
+        page: number,
+        limit: number
+    ): Promise<{
+        registros: Medico[];
+        total: number;
+    }> {
+
+        const filtrosValidados: {
+            nome?: string;
+            especialidadeId?: string;
+        } = {};
+
+        if (filtros.nome) {
+            filtrosValidados.nome = filtros.nome.trim();
+
+            if (!filtrosValidados.nome) {
+                throw new AppError('Nome inválido.', 400);
+            }
+        }
+
+        if (filtros.especialidadeId) {
+            filtrosValidados.especialidadeId = filtros.especialidadeId;
+        }
+
+        return this.medicoRepository.listar(
+            filtrosValidados,
+            page,
+            limit
+        );
     }
 
     async buscarPorId(id: string): Promise<Medico> {

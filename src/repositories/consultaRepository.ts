@@ -16,7 +16,7 @@ export class ConsultaRepository {
             }
         });
     } */
-    async listar(filtros?: {
+    /* async listar(filtros?: {
         dataInicial?: Date;
         dataFinal?: Date;
         status?: ConsultaStatus;
@@ -62,6 +62,65 @@ export class ConsultaRepository {
         return query
             .orderBy('consulta.dataHora', 'ASC')
             .getMany();
+    } */
+    async listar(
+        filtros: {
+            dataInicial?: Date;
+            dataFinal?: Date;
+            status?: ConsultaStatus;
+            medicoId?: string;
+            pacienteId?: string;
+        },
+        page: number,
+        limit: number
+    ): Promise<{
+        registros: Consulta[];
+        total: number;
+    }> {
+        const query = this.repository
+            .createQueryBuilder('consulta')
+            .leftJoinAndSelect('consulta.medico', 'medico')
+            .leftJoinAndSelect('consulta.paciente', 'paciente');
+
+        if (filtros?.dataInicial) {
+            query.andWhere('consulta.dataHora >= :dataInicial', {
+                dataInicial: filtros.dataInicial
+            });
+        }
+
+        if (filtros?.dataFinal) {
+            query.andWhere('consulta.dataHora <= :dataFinal', {
+                dataFinal: filtros.dataFinal
+            });
+        }
+
+        if (filtros?.status) {
+            query.andWhere('consulta.status = :status', {
+                status: filtros.status
+            });
+        }
+
+        if (filtros?.medicoId) {
+            //query.andWhere('consulta.medicoId = :medicoId', {
+            query.andWhere('medico.id = :medicoId', {
+                medicoId: filtros.medicoId
+            });
+        }
+
+        if (filtros?.pacienteId) {
+            //query.andWhere('consulta.pacienteId = :pacienteId', {
+            query.andWhere('paciente.id = :pacienteId', {
+                pacienteId: filtros.pacienteId
+            });
+        }
+
+        const [registros, total] = await query
+            .orderBy('consulta.dataHora', 'ASC')
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
+
+        return { registros, total };
     }
 
     async buscarPorId(id: string): Promise<Consulta | null> {

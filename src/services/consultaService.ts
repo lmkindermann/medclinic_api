@@ -73,13 +73,26 @@ export class ConsultaService {
     /* async listar(): Promise<Consulta[]> {
         return this.consultaRepository.listar();
     } */
+    /* async listar(filtros: {
+        dataInicial?: string;
+        dataFinal?: string;
+        status?: string;
+        medicoId?: string;
+        pacienteId?: string;
+    }): Promise<Consulta[]> { */
     async listar(filtros: {
         dataInicial?: string;
         dataFinal?: string;
         status?: string;
         medicoId?: string;
         pacienteId?: string;
-    }): Promise<Consulta[]> {
+        },
+        page: number,
+        limit: number
+    ): Promise<{ 
+        registros: Consulta[]; 
+        total: number; 
+    }> {
 
         const filtrosValidados: {
             dataInicial?: Date;
@@ -146,7 +159,12 @@ export class ConsultaService {
             filtrosValidados.pacienteId = filtros.pacienteId;
         }
 
-        return this.consultaRepository.listar(filtrosValidados);
+        //return this.consultaRepository.listar(filtrosValidados);
+        return this.consultaRepository.listar(
+            filtrosValidados,
+            page,
+            limit
+        );
     }
 
     async buscarPorId(id: string): Promise<Consulta> {

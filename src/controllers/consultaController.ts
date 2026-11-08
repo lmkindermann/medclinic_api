@@ -51,6 +51,27 @@ export class ConsultaController {
     } */
     async listar(req: Request, res: Response): Promise<Response> {
         try {
+            const pageParam = req.query.page;
+            const limitParam = req.query.limit;
+
+            if (
+                (pageParam !== undefined && typeof pageParam !== 'string') ||
+                (limitParam !== undefined && typeof limitParam !== 'string')
+            ) {
+                throw new AppError('Parâmetros de paginação inválidos.', 400);
+            }
+
+            const page = pageParam === undefined ? 1 : Number(pageParam);
+            const limit = limitParam === undefined ? 10 : Number(limitParam);
+
+            if (!Number.isInteger(page) || page < 1) {
+                throw new AppError('O parâmetro page deve ser um inteiro maior que zero.', 400);
+            }
+
+            if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+                throw new AppError('O parâmetro limit deve ser um inteiro entre 1 e 100.', 400);
+            }
+
             const filtros = {
                 dataInicial: req.query.dataInicial as string,
                 dataFinal: req.query.dataFinal as string,
@@ -59,9 +80,18 @@ export class ConsultaController {
                 pacienteId: req.query.pacienteId as string
             };
 
-            const consultas = await this.consultaService.listar(filtros);
+            const consultas = await this.consultaService.listar(filtros, page, limit);
 
-            return res.status(200).json(consultas);
+            //return res.status(200).json(consultas);
+            return res.status(200).json({
+                dados: consultas.registros,
+                paginacao: {
+                    paginaAtual: page,
+                    limit,
+                    totalRegistros: consultas.total,
+                    totalPaginas: Math.ceil(consultas.total / limit)
+                }
+            });
 
         } catch (error) {
             if (error instanceof AppError) {
