@@ -1,7 +1,7 @@
-
 import { Request, Response } from 'express';
 import { EspecialidadeService } from '../services/especialidadeService';
 import { AppError } from '../utils/appError';
+import logger from '../config/logger';
 
 export class EspecialidadeController {
     private service = new EspecialidadeService();
@@ -59,7 +59,10 @@ export class EspecialidadeController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao listar especialidades.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao listar especialidades.'
@@ -118,7 +121,10 @@ export class EspecialidadeController {
             });
         }
 
-        console.error('Erro no EspecialidadeController:', error);
+        //console.error('Erro no EspecialidadeController:', error);
+        logger.error('Erro inesperado no EspecialidadeController.', {
+            erro: error instanceof Error ? error.stack : String(error)
+        });
 
         return res.status(500).json({
             erro: 'Erro interno do servidor.'
@@ -138,7 +144,10 @@ export class EspecialidadeController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao gerar relatório de médicos por especialidade.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de médicos por especialidade.'

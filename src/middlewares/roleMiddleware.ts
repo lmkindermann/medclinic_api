@@ -1,15 +1,30 @@
 import { Response, NextFunction } from "express"
 import { AuthenticatedRequest } from './authMiddleware';
 import { UsuarioRole } from "../entities/user"
+import logger from "../config/logger";
 
 export function roleMiddleware(...rolesPermitidas: UsuarioRole[]){
     return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        if(!req.usuario){
-            return res.status(401).json({erro: "Não autenticado"})
+        if (!req.usuario) {
+            logger.warn('Acesso negado: usuário não autenticado.', {
+                metodo: req.method,
+                rota: req.originalUrl
+            });
+
+            return res.status(401).json({ erro: "Não autenticado" });
         }
 
-        if(!rolesPermitidas.includes(req.usuario.role)){
-            return res.status(403).json({erro: "Você não tem permissão para acessar este recurso"})
+        if (!rolesPermitidas.includes(req.usuario.role)) {
+            logger.warn('Acesso negado: permissão insuficiente.', {
+                metodo: req.method,
+                rota: req.originalUrl,
+                categoria: req.usuario.role,
+                rolesPermitidas
+            });
+
+            return res.status(403).json({
+                erro: "Você não tem permissão para acessar este recurso"
+            });
         }
 
         return next()

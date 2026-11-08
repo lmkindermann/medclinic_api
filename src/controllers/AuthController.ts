@@ -3,6 +3,7 @@ import { Usuario, UsuarioRole } from "../entities/user";
 import {Request, Response} from "express"
 import bcrypt from "bcryptjs"
 import { gerarToken } from "../utils/jwt";
+import logger from "../config/logger";
 
 const usuarioRepository = AppDataSource.getRepository(Usuario)
 
@@ -36,6 +37,9 @@ export class AuthController{
         })
 
         await usuarioRepository.save(usuario)
+        logger.info('Usuário cadastrado com sucesso.', {
+            categoria: usuario.categoria
+        });
 
         return res.status(201).json({
             id: usuario.id,
@@ -55,15 +59,20 @@ export class AuthController{
 
         const usuario = await usuarioRepository.findOneBy({email})
         if(!usuario){
+            logger.warn('Falha de autenticação: credenciais inválidas.');
             return res.status(401).json({erro: "Credenciais Inválidas"})
         }
 
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha)
         if(!senhaCorreta){
+            logger.warn('Falha de autenticação: credenciais inválidas.');
             return res.status(401).json({erro: "Credenciais Inválidas"})
         }
 
         const token = gerarToken({id: usuario.id, role: usuario.categoria})
+        logger.info('Autenticação realizada com sucesso.', {
+            categoria: usuario.categoria
+        });
 
         return res.json({
             token,

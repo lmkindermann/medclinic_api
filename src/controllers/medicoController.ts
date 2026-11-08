@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { MedicoService } from '../services/medicoService';
 import { AppError } from '../utils/appError';
+import logger from '../config/logger';
 
 export class MedicoController {
 
@@ -89,7 +90,10 @@ export class MedicoController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao listar médicos.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao listar médicos.'
@@ -159,7 +163,10 @@ export class MedicoController {
             });
         }
 
-        console.error('Erro no MedicoController:', error);
+        //console.error('Erro no MedicoController:', error);
+        logger.error('Erro inesperado no MedicoController.', {
+            erro: error instanceof Error ? error.stack : String(error)
+        });
 
         return res.status(500).json({
             erro: 'Erro interno do servidor.'

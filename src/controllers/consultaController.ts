@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ConsultaService } from '../services/consultaService';
 import { AppError } from '../utils/appError';
+import logger from '../config/logger';
 
 export class ConsultaController {
 
@@ -12,6 +13,10 @@ export class ConsultaController {
                 medicoId: req.body.medicoId,
                 pacienteId: req.body.pacienteId,
                 dataHora: req.body.dataHora
+            });
+
+            logger.info('Consulta agendada com sucesso.', {
+                consultaId: consulta.id
             });
 
             res.status(201).json({
@@ -27,7 +32,10 @@ export class ConsultaController {
                 return;
             }
 
-            console.error('Erro ao agendar consulta:', erro);
+            //console.error('Erro ao agendar consulta:', erro);
+            logger.error('Erro ao agendar consulta.', {
+                erro: erro instanceof Error ? erro.stack : String(erro)
+            });
 
             res.status(500).json({
                 mensagem: 'Erro interno ao agendar consulta.'
@@ -100,7 +108,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao listar consultas.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });            
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao listar consultas.'
@@ -124,7 +135,10 @@ export class ConsultaController {
                 return;
             }
 
-            console.error('Erro ao buscar consulta:', erro);
+            //console.error('Erro ao buscar consulta:', erro);
+            logger.error('Erro ao buscar consulta.', {
+                erro: erro instanceof Error ? erro.stack : String(erro)
+            });
 
             res.status(500).json({
                 mensagem: 'Erro interno ao buscar consulta.'
@@ -139,6 +153,10 @@ export class ConsultaController {
                 req.body.observacoes
             );
 
+            logger.info('Atendimento realizado com sucesso.', {
+                consultaId: consulta.id
+            });
+
             return res.status(200).json({
                 mensagem: 'Atendimento realizado com sucesso.',
                 consulta
@@ -151,7 +169,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao realizar atendimento.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 erro: 'Erro interno ao realizar atendimento.'
@@ -165,6 +186,10 @@ export class ConsultaController {
                 String(req.params.id)
             );
 
+            logger.info('Consulta cancelada com sucesso.', {
+                consultaId: consulta.id
+            });
+
             return res.status(200).json({
                 mensagem: 'Consulta cancelada com sucesso.',
                 consulta
@@ -177,7 +202,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao cancelar consulta.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 erro: 'Erro interno ao cancelar consulta.'
@@ -198,7 +226,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao gerar relatório de consultas por status.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de consultas por status.'
@@ -219,7 +250,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao gerar relatório de consultas por médico.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de consultas por médico.'
@@ -240,7 +274,10 @@ export class ConsultaController {
                 });
             }
 
-            console.error(error);
+            //console.error(error);
+            logger.error('Erro ao gerar relatório de pacientes com consultas agendadas.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de pacientes com consultas agendadas.'
