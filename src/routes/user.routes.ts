@@ -1,9 +1,14 @@
-import { Router } from "express"
-import { UserController } from "../controllers/UserController"
+import { Router } from "express";
+import { UserController } from "../controllers/UserController";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
-const userRoutes = Router()
-const userController = new UserController()
+const userRoutes = Router();
+const userController = new UserController();
 
-userRoutes.get("/me", (req, res) => userController.me(req, res))
+userRoutes.get(
+    "/me",
+    authMiddleware,
+    (req, res, next) => userController.me(req, res, next)
+);
 
-export default userRoutes
+export default userRoutes;

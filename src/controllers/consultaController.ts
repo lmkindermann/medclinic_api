@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ConsultaService } from '../services/consultaService';
 import { AppError } from '../utils/appError';
 import logger from '../config/logger';
@@ -7,7 +7,7 @@ export class ConsultaController {
 
     private consultaService = new ConsultaService();
 
-    async agendar(req: Request, res: Response): Promise<void> {
+    async agendar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const consulta = await this.consultaService.agendar({
                 medicoId: req.body.medicoId,
@@ -24,8 +24,8 @@ export class ConsultaController {
                 consulta
             });
 
-        } catch (erro) {
-            if (erro instanceof AppError) {
+        } catch (error) {
+            /* if (erro instanceof AppError) {
                 res.status(erro.statusCode).json({
                     mensagem: erro.message
                 });
@@ -39,7 +39,8 @@ export class ConsultaController {
 
             res.status(500).json({
                 mensagem: 'Erro interno ao agendar consulta.'
-            });
+            }); */
+            next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
@@ -57,7 +58,8 @@ export class ConsultaController {
             });
         }
     } */
-    async listar(req: Request, res: Response): Promise<Response> {
+    //async listar(req: Request, res: Response): Promise<Response> {
+    async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const pageParam = req.query.page;
             const limitParam = req.query.limit;
@@ -91,7 +93,8 @@ export class ConsultaController {
             const consultas = await this.consultaService.listar(filtros, page, limit);
 
             //return res.status(200).json(consultas);
-            return res.status(200).json({
+            //return res.status(200).json({
+            res.status(200).json({
                 dados: consultas.registros,
                 paginacao: {
                     paginaAtual: page,
@@ -102,7 +105,7 @@ export class ConsultaController {
             });
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /*if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     mensagem: error.message
                 });
@@ -115,11 +118,12 @@ export class ConsultaController {
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao listar consultas.'
-            });
+            }); */
+            next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
-    async buscarPorId(req: Request, res: Response): Promise<void> {
+    async buscarPorId(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const consulta = await this.consultaService.buscarPorId(
                 String(req.params.id)
@@ -127,8 +131,8 @@ export class ConsultaController {
 
             res.status(200).json(consulta);
 
-        } catch (erro) {
-            if (erro instanceof AppError) {
+        } catch (error) {
+            /* if (erro instanceof AppError) {
                 res.status(erro.statusCode).json({
                     mensagem: erro.message
                 });
@@ -142,11 +146,12 @@ export class ConsultaController {
 
             res.status(500).json({
                 mensagem: 'Erro interno ao buscar consulta.'
-            });
+            }); */
+            next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
-    async realizarAtendimento(req: Request, res: Response) {
+    async realizarAtendimento(req: Request, res: Response, next: NextFunction) {
         try {
             const consulta = await this.consultaService.realizarAtendimento(
                 String(req.params.id),
@@ -163,7 +168,7 @@ export class ConsultaController {
             });
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     erro: error.message
                 });
@@ -176,11 +181,13 @@ export class ConsultaController {
 
             return res.status(500).json({
                 erro: 'Erro interno ao realizar atendimento.'
-            });
+            }); */
+            next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
-    async cancelar(req: Request, res: Response) {
+    //async cancelar(req: Request, res: Response): Promise<Response> {
+    async cancelar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const consulta = await this.consultaService.cancelar(
                 String(req.params.id)
@@ -190,13 +197,14 @@ export class ConsultaController {
                 consultaId: consulta.id
             });
 
-            return res.status(200).json({
+            //return res.status(200).json({
+            res.status(200).json({
                 mensagem: 'Consulta cancelada com sucesso.',
                 consulta
             });
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     erro: error.message
                 });
@@ -209,18 +217,21 @@ export class ConsultaController {
 
             return res.status(500).json({
                 erro: 'Erro interno ao cancelar consulta.'
-            });
+            }); */
+            next(error);
         }
     }
 
-    async relatorioPorStatus(req: Request, res: Response): Promise<Response> {
+    //async relatorioPorStatus(req: Request, res: Response): Promise<Response> {
+    async relatorioPorStatus(req: Request, res: Response, next: NextFunction): Promise<void> {    
         try {
             const resultado = await this.consultaService.relatorioPorStatus();
 
-            return res.status(200).json(resultado);
+            //return res.status(200).json(resultado);
+            res.status(200).json(resultado);
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     mensagem: error.message
                 });
@@ -233,18 +244,21 @@ export class ConsultaController {
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de consultas por status.'
-            });
+            }); */
+            next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
-    async relatorioPorMedico(req: Request, res: Response): Promise<Response> {
+    //async relatorioPorMedico(req: Request, res: Response): Promise<Response> {
+    async relatorioPorMedico(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const resultado = await this.consultaService.relatorioPorMedico();
 
-            return res.status(200).json(resultado);
+            //return res.status(200).json(resultado);
+            res.status(200).json(resultado);
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     mensagem: error.message
                 });
@@ -257,18 +271,21 @@ export class ConsultaController {
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de consultas por médico.'
-            });
+            }); */
+            next(error);
         }
     }
 
-    async relatorioPacientesAgendados(req: Request, res: Response): Promise<Response> {
+    //async relatorioPacientesAgendados(req: Request, res: Response): Promise<Response> {
+    async relatorioPacientesAgendados(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const resultado = await this.consultaService.relatorioPacientesAgendados();
 
-            return res.status(200).json(resultado);
+            //return res.status(200).json(resultado);
+            res.status(200).json(resultado);
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     mensagem: error.message
                 });
@@ -281,7 +298,8 @@ export class ConsultaController {
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao gerar relatório de pacientes com consultas agendadas.'
-            });
+            }); */
+            next(error);
         }
     }
 

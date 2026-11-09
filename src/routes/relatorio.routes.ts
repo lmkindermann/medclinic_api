@@ -51,7 +51,8 @@ relatorioRoutes.use(authMiddleware);
 relatorioRoutes.get(
     '/consultas/status',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => consultaController.relatorioPorStatus(req, res)
+    //(req, res) => consultaController.relatorioPorStatus(req, res)
+    (req, res, next) => consultaController.relatorioPorStatus(req, res, next)
 );
 
 /**
@@ -85,7 +86,8 @@ relatorioRoutes.get(
 relatorioRoutes.get(
     '/consultas/medicos',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => consultaController.relatorioPorMedico(req, res)
+    //(req, res) => consultaController.relatorioPorMedico(req, res)
+    (req, res, next) => consultaController.relatorioPorMedico(req, res, next)
 );
 
 /**
@@ -119,7 +121,8 @@ relatorioRoutes.get(
 relatorioRoutes.get(
     '/medicos/especialidades',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => especialidadeController.relatorioPorMedico(req, res)
+    //(req, res) => especialidadeController.relatorioPorMedico(req, res)
+    (req, res, next) => especialidadeController.relatorioPorMedico(req, res, next)
 );
 
 /**
@@ -153,7 +156,8 @@ relatorioRoutes.get(
 relatorioRoutes.get(
     '/pacientes/agendados',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => consultaController.relatorioPacientesAgendados(req, res)
+    //(req, res) => consultaController.relatorioPacientesAgendados(req, res)
+    (req, res, next) => consultaController.relatorioPacientesAgendados(req, res, next)
 );
 
 export default relatorioRoutes;

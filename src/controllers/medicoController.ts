@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { MedicoService } from '../services/medicoService';
 import { AppError } from '../utils/appError';
-import logger from '../config/logger';
+//import logger from '../config/logger';
 
 export class MedicoController {
 
@@ -43,7 +43,8 @@ export class MedicoController {
             });
         }
     } */
-    async listar(req: Request, res: Response): Promise<Response> {
+    //async listar(req: Request, res: Response): Promise<Response> {
+    async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const pageParam = req.query.page;
             const limitParam = req.query.limit;
@@ -73,7 +74,8 @@ export class MedicoController {
 
             const resultado = await this.service.listar(filtros, page, limit);
 
-            return res.status(200).json({
+            //return res.status(200).json({
+            res.status(200).json({
                 dados: resultado.registros,
                 paginacao: {
                     paginaAtual: page,
@@ -84,7 +86,7 @@ export class MedicoController {
             });
 
         } catch (error) {
-            if (error instanceof AppError) {
+            /* if (error instanceof AppError) {
                 return res.status(error.statusCode).json({
                     mensagem: error.message
                 });
@@ -97,65 +99,78 @@ export class MedicoController {
 
             return res.status(500).json({
                 mensagem: 'Erro interno ao listar médicos.'
-            });
+            }); */
+            next(error);
         }
     }
 
     // Buscar médico por ID
-    async buscarPorId(req: Request, res: Response): Promise<Response> {
+    //async buscarPorId(req: Request, res: Response): Promise<Response> {
+    async buscarPorId(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const medico = await this.service.buscarPorId(
                 String(req.params.id)
             );
 
-            return res.status(200).json(medico);
+            //return res.status(200).json(medico);
+            res.status(200).json(medico);
 
         } catch (error) {
-            return this.tratarErro(error, res);
+            //return this.tratarErro(error, res);
+            next(error);
         }
     }
 
     // Cadastrar médico
-    async criar(req: Request, res: Response): Promise<Response> {
+    //async criar(req: Request, res: Response): Promise<Response> {
+    async criar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const medico = await this.service.criar(req.body);
 
-            return res.status(201).json(medico);
+            //return res.status(201).json(medico);
+            res.status(201).json(medico);
 
         } catch (error) {
-            return this.tratarErro(error, res);
+            //return this.tratarErro(error, res);
+            next(error);
         }
     }
 
     // Atualizar médico
-    async atualizar(req: Request, res: Response): Promise<Response> {
+    //async atualizar(req: Request, res: Response): Promise<Response> {
+    async atualizar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const medico = await this.service.atualizar(
                 String(req.params.id),
                 req.body
             );
 
-            return res.status(200).json(medico);
+            //return res.status(200).json(medico);
+            res.status(200).json(medico);
 
         } catch (error) {
-            return this.tratarErro(error, res);
+            //return this.tratarErro(error, res);
+            next(error);
         }
     }
 
     // Excluir médico
-    async excluir(req: Request, res: Response): Promise<Response> {
+    //async excluir(req: Request, res: Response): Promise<Response> {
+    async excluir(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             await this.service.excluir(String(req.params.id));
 
-            return res.status(204).send();
+            //return res.status(204).send();
+            res.status(204).send();
 
         } catch (error) {
-            return this.tratarErro(error, res);
+            //return this.tratarErro(error, res);
+            next(error);
         }
     }
 
     // Tratamento centralizado de erros
-    private tratarErro(error: unknown, res: Response): Response {
+    /* private tratarErro(error: unknown, res: Response): Response {
 
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
@@ -171,5 +186,5 @@ export class MedicoController {
         return res.status(500).json({
             erro: 'Erro interno do servidor.'
         });
-    }
+    } */
 }

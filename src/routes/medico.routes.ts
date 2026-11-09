@@ -82,7 +82,8 @@ medicoRoutes.use(authMiddleware);
 medicoRoutes.get(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => medicoController.listar(req, res)
+    //(req, res) => medicoController.listar(req, res)
+    (req, res, next) => medicoController.listar(req, res, next)
 );
 
 /**
@@ -124,7 +125,8 @@ medicoRoutes.get(
 medicoRoutes.get(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => medicoController.buscarPorId(req, res)
+    //(req, res) => medicoController.buscarPorId(req, res)
+    (req, res, next) => medicoController.buscarPorId(req, res, next)
 );
 
 /**
@@ -176,7 +178,8 @@ medicoRoutes.get(
 medicoRoutes.post(
     '/',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => medicoController.criar(req, res)
+    //(req, res) => medicoController.criar(req, res)
+    (req, res, next) => medicoController.criar(req, res, next)
 );
 
 /**
@@ -234,7 +237,8 @@ medicoRoutes.post(
 medicoRoutes.put(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => medicoController.atualizar(req, res)
+    //(req, res) => medicoController.atualizar(req, res)
+    (req, res, next) => medicoController.atualizar(req, res, next)
 );
 
 /**
@@ -269,7 +273,8 @@ medicoRoutes.put(
 medicoRoutes.delete(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => medicoController.excluir(req, res)
+    //(req, res) => medicoController.excluir(req, res)
+    (req, res, next) => medicoController.excluir(req, res, next)
 );
 
 export default medicoRoutes;

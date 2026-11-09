@@ -68,7 +68,8 @@ especialidadeRoutes.use(authMiddleware);
 especialidadeRoutes.get(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => especialidadeController.listar(req, res)
+    //(req, res) => especialidadeController.listar(req, res)
+    (req, res, next) => especialidadeController.listar(req, res, next)
 );
 
 /**
@@ -107,7 +108,8 @@ especialidadeRoutes.get(
 especialidadeRoutes.get(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => especialidadeController.buscarPorId(req, res)
+    //(req, res) => especialidadeController.buscarPorId(req, res)
+    (req, res, next) => especialidadeController.buscarPorId(req, res, next)
 );
 
 /**
@@ -154,7 +156,8 @@ especialidadeRoutes.get(
 especialidadeRoutes.post(
     '/',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => especialidadeController.criar(req, res)
+    //(req, res) => especialidadeController.criar(req, res)
+    (req, res, next) => especialidadeController.criar(req, res, next)
 );
 
 /**
@@ -209,7 +212,8 @@ especialidadeRoutes.post(
 especialidadeRoutes.put(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => especialidadeController.atualizar(req, res)
+    //(req, res) => especialidadeController.atualizar(req, res)
+    (req, res, next) => especialidadeController.atualizar(req, res, next)
 );
 
 /**
@@ -242,7 +246,8 @@ especialidadeRoutes.put(
 especialidadeRoutes.delete(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => especialidadeController.excluir(req, res)
+    //(req, res) => especialidadeController.excluir(req, res)
+    (req, res, next) => especialidadeController.excluir(req, res, next)
 );
 
 export default especialidadeRoutes;

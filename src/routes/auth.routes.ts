@@ -59,7 +59,8 @@ const authController = new AuthController()
 authRoutes.post(
     "/register/user",
     authRateLimiter,
-    (req, res) => authController.registrarUsuario(req, res)
+    //(req, res) => authController.registrarUsuario(req, res)
+    (req, res, next) => authController.registrarUsuario(req, res, next)
 );
 
 /**
@@ -109,7 +110,8 @@ authRoutes.post(
 authRoutes.post(
     "/login",
     authRateLimiter,
-    (req, res) => authController.login(req, res)
+    //(req, res) => authController.login(req, res)
+    (req, res, next) => authController.login(req, res, next)
 );
 
 export default authRoutes

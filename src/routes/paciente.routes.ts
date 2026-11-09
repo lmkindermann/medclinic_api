@@ -76,7 +76,8 @@ pacienteRoutes.use(authMiddleware);
 pacienteRoutes.get(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => pacienteController.listar(req, res)
+    //(req, res) => pacienteController.listar(req, res)
+    (req, res, next) => pacienteController.listar(req, res, next)
 );
 
 /**
@@ -118,7 +119,8 @@ pacienteRoutes.get(
 pacienteRoutes.get(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => pacienteController.buscarPorId(req, res)
+    //(req, res) => pacienteController.buscarPorId(req, res)
+    (req, res, next) => pacienteController.buscarPorId(req, res, next)
 );
 
 /**
@@ -182,7 +184,8 @@ pacienteRoutes.get(
 pacienteRoutes.post(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => pacienteController.criar(req, res)
+    //(req, res) => pacienteController.criar(req, res)
+    (req, res, next) => pacienteController.criar(req, res, next)
 );
 
 /**
@@ -251,7 +254,8 @@ pacienteRoutes.post(
 pacienteRoutes.put(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => pacienteController.atualizar(req, res)
+    //(req, res) => pacienteController.atualizar(req, res)
+    (req, res, next) => pacienteController.atualizar(req, res, next)
 );
 
 /**
@@ -284,7 +288,8 @@ pacienteRoutes.put(
 pacienteRoutes.delete(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN),
-    (req, res) => pacienteController.excluir(req, res)
+    //(req, res) => pacienteController.excluir(req, res)
+    (req, res, next) => pacienteController.excluir(req, res, next)
 );
 
 export default pacienteRoutes;

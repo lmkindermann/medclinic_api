@@ -10,6 +10,8 @@ import { httpLogger } from './middlewares/httpLogger';
 import cors from 'cors';
 import { rateLimiter } from './middlewares/rateLimiter';
 import { getCorsOptions } from './config/cors';
+import { errorMiddleware } from './middlewares/errorMiddleware';
+import { AppError } from './utils/appError';
 
 dotenv.config();
 
@@ -28,6 +30,14 @@ const PORT = process.env.PORT || 3333;
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(routes);
+
+// Tratamento de rotas inexistentes
+app.use((req, res, next) => {
+    next(new AppError('Rota não encontrada.', 404));
+});
+
+// Middleware central de tratamento de erros
+app.use(errorMiddleware);
 
 AppDataSource.initialize()
   .then(() => {

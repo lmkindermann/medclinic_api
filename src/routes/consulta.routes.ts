@@ -105,7 +105,8 @@ consultaRoutes.use(authMiddleware);
 consultaRoutes.get(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => consultaController.listar(req, res)
+    //(req, res) => consultaController.listar(req, res)
+    (req, res, next) => consultaController.listar(req, res, next)
 );
 
 /**
@@ -151,7 +152,8 @@ consultaRoutes.get(
 consultaRoutes.get(
     '/:id',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => consultaController.buscarPorId(req, res)
+    //(req, res) => consultaController.buscarPorId(req, res)
+    (req, res, next) => consultaController.buscarPorId(req, res, next)
 );
 
 /**
@@ -212,7 +214,8 @@ consultaRoutes.get(
 consultaRoutes.post(
     '/',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => consultaController.agendar(req, res)
+    //(req, res) => consultaController.agendar(req, res)
+    (req, res, next) => consultaController.agendar(req, res, next)
 );
 
 /**
@@ -267,7 +270,8 @@ consultaRoutes.post(
 consultaRoutes.patch(
     '/:id/atendimento',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => consultaController.realizarAtendimento(req, res)
+    //(req, res) => consultaController.realizarAtendimento(req, res)
+    (req, res, next) => consultaController.realizarAtendimento(req, res, next)
 );
 
 /**
@@ -309,7 +313,8 @@ consultaRoutes.patch(
 consultaRoutes.patch(
     '/:id/cancelamento',
     roleMiddleware(UsuarioRole.ADMIN, UsuarioRole.ATENDENTE),
-    (req, res) => consultaController.cancelar(req, res)
+    //(req, res) => consultaController.cancelar(req, res)
+    (req, res, next) => consultaController.cancelar(req, res, next)
 );
 
 export default consultaRoutes;

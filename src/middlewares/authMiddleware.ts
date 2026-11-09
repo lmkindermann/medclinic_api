@@ -30,8 +30,16 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
     const [scheme, token] = authHeader.split(" ")
 
     //Checar o formato Bearer <token>
-    if (scheme !== "Bearer" || !token){
+    /* if (scheme !== "Bearer" || !token){
         return res.status(401).json({erro: "Token mal formatado."})
+    } */
+    if (scheme !== "Bearer" || !token) {
+        logger.warn('Acesso não autenticado: token mal formatado.', {
+            metodo: req.method,
+            rota: req.originalUrl
+        });
+
+        return res.status(401).json({ erro: "Token mal formatado." });
     }
 
     try{
