@@ -2,6 +2,7 @@
 import { Especialidade } from '../entities/especialidade';
 import { EspecialidadeRepository } from '../repositories/especialidadeRepository';
 import { AppError } from '../utils/appError';
+import { MedicoRepository } from '../repositories/medicoRepository';
 
 interface CriarEspecialidadeDTO {
     nome: string;
@@ -15,9 +16,16 @@ interface AtualizarEspecialidadeDTO {
 
 export class EspecialidadeService {
     private repository = new EspecialidadeRepository();
+    private medicoRepository = new MedicoRepository();
 
-    async listar(): Promise<Especialidade[]> {
+    /* async listar(): Promise<Especialidade[]> {
         return this.repository.listar();
+    } */
+    async listar(page: number, limit: number): Promise<{
+        registros: Especialidade[];
+        total: number;
+    }> {
+        return this.repository.listar(page, limit);
     }
 
     async buscarPorId(id: string): Promise<Especialidade> {
@@ -80,10 +88,20 @@ export class EspecialidadeService {
 
     async excluir(id: string): Promise<void> {
         const especialidade = await this.buscarPorId(id);
+        const possuiMedicos = await this.medicoRepository.existePorEspecialidade(id);
 
-        // A verificação de médicos vinculados será adicionada
-        // quando implementarmos a entidade Médico (RF02).
+        if (possuiMedicos) {
+            throw new AppError(
+                'Não é possível excluir uma especialidade que possui médicos associados.',
+                409
+            );
+        }
 
         await this.repository.excluir(especialidade);
     }
+
+    async relatorioPorMedico() {
+        return await this.repository.relatorioPorMedico();
+    }
+
 }

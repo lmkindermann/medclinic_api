@@ -1,0 +1,190 @@
+import { Request, Response, NextFunction } from 'express';
+import { MedicoService } from '../services/medicoService';
+import { AppError } from '../utils/appError';
+//import logger from '../config/logger';
+
+export class MedicoController {
+
+    private service = new MedicoService();
+
+    // Listar médicos
+    /* async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            const medicos = await this.service.listar();
+
+            return res.status(200).json(medicos);
+
+        } catch (error) {
+            return this.tratarErro(error, res);
+        }
+    } */
+    /* async listar(req: Request, res: Response): Promise<Response> {
+        try {
+            const filtros = {
+                nome: req.query.nome as string,
+                especialidadeId: req.query.especialidadeId as string
+            };
+
+            const medicos = await this.service.listar(filtros);
+
+            return res.status(200).json(medicos);
+
+        } catch (error) {
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            console.error(error);
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao listar médicos.'
+            });
+        }
+    } */
+    //async listar(req: Request, res: Response): Promise<Response> {
+    async listar(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const pageParam = req.query.page;
+            const limitParam = req.query.limit;
+
+            if (
+                (pageParam !== undefined && typeof pageParam !== 'string') ||
+                (limitParam !== undefined && typeof limitParam !== 'string')
+            ) {
+                throw new AppError('Parâmetros de paginação inválidos.', 400);
+            }
+
+            const page = pageParam === undefined ? 1 : Number(pageParam);
+            const limit = limitParam === undefined ? 10 : Number(limitParam);
+
+            if (!Number.isInteger(page) || page < 1) {
+                throw new AppError('O parâmetro page deve ser um inteiro maior que zero.', 400);
+            }
+
+            if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+                throw new AppError('O parâmetro limit deve ser um inteiro entre 1 e 100.', 400);
+            }
+
+            const filtros = {
+                nome: req.query.nome as string,
+                especialidadeId: req.query.especialidadeId as string
+            };
+
+            const resultado = await this.service.listar(filtros, page, limit);
+
+            //return res.status(200).json({
+            res.status(200).json({
+                dados: resultado.registros,
+                paginacao: {
+                    paginaAtual: page,
+                    limit,
+                    totalRegistros: resultado.total,
+                    totalPaginas: Math.ceil(resultado.total / limit)
+                }
+            });
+
+        } catch (error) {
+            /* if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    mensagem: error.message
+                });
+            }
+
+            //console.error(error);
+            logger.error('Erro ao listar médicos.', {
+                erro: error instanceof Error ? error.stack : String(error)
+            });
+
+            return res.status(500).json({
+                mensagem: 'Erro interno ao listar médicos.'
+            }); */
+            next(error);
+        }
+    }
+
+    // Buscar médico por ID
+    //async buscarPorId(req: Request, res: Response): Promise<Response> {
+    async buscarPorId(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const medico = await this.service.buscarPorId(
+                String(req.params.id)
+            );
+
+            //return res.status(200).json(medico);
+            res.status(200).json(medico);
+
+        } catch (error) {
+            //return this.tratarErro(error, res);
+            next(error);
+        }
+    }
+
+    // Cadastrar médico
+    //async criar(req: Request, res: Response): Promise<Response> {
+    async criar(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const medico = await this.service.criar(req.body);
+
+            //return res.status(201).json(medico);
+            res.status(201).json(medico);
+
+        } catch (error) {
+            //return this.tratarErro(error, res);
+            next(error);
+        }
+    }
+
+    // Atualizar médico
+    //async atualizar(req: Request, res: Response): Promise<Response> {
+    async atualizar(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const medico = await this.service.atualizar(
+                String(req.params.id),
+                req.body
+            );
+
+            //return res.status(200).json(medico);
+            res.status(200).json(medico);
+
+        } catch (error) {
+            //return this.tratarErro(error, res);
+            next(error);
+        }
+    }
+
+    // Excluir médico
+    //async excluir(req: Request, res: Response): Promise<Response> {
+    async excluir(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            await this.service.excluir(String(req.params.id));
+
+            //return res.status(204).send();
+            res.status(204).send();
+
+        } catch (error) {
+            //return this.tratarErro(error, res);
+            next(error);
+        }
+    }
+
+    // Tratamento centralizado de erros
+    /* private tratarErro(error: unknown, res: Response): Response {
+
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                erro: error.message
+            });
+        }
+
+        //console.error('Erro no MedicoController:', error);
+        logger.error('Erro inesperado no MedicoController.', {
+            erro: error instanceof Error ? error.stack : String(error)
+        });
+
+        return res.status(500).json({
+            erro: 'Erro interno do servidor.'
+        });
+    } */
+}

@@ -1,0 +1,125 @@
+import { AppDataSource } from '../database/datasource';
+import { Medico } from '../entities/medico';
+
+export class MedicoRepository {
+
+    private repository = AppDataSource.getRepository(Medico);
+
+    // Listar todos os médicos, incluindo suas especialidades
+    /* async listar(): Promise<Medico[]> {
+        return this.repository.find({
+            relations: {
+                especialidade: true
+            },
+            order: {
+                nome: 'ASC'
+            }
+        });
+    } */
+    /* async listar(filtros?: {
+        nome?: string;
+        especialidadeId?: string;
+    }): Promise<Medico[]> {
+
+        const query = this.repository
+            .createQueryBuilder('medico')
+            .leftJoinAndSelect('medico.especialidade', 'especialidade');
+
+        if (filtros?.nome) {
+            query.andWhere('medico.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        if (filtros?.especialidadeId) {
+            query.andWhere('especialidade.id = :especialidadeId', {
+                especialidadeId: filtros.especialidadeId
+            });
+        }
+
+        return query
+            .orderBy('medico.nome', 'ASC')
+            .getMany();
+    } */
+    async listar(
+        filtros: {
+            nome?: string;
+            especialidadeId?: string;
+        },
+        page: number,
+        limit: number
+    ): Promise<{
+        registros: Medico[];
+        total: number;
+    }> {
+
+        const query = this.repository
+            .createQueryBuilder('medico')
+            .leftJoinAndSelect('medico.especialidade', 'especialidade');
+
+        if (filtros?.nome) {
+            query.andWhere('medico.nome ILIKE :nome', {
+                nome: `%${filtros.nome}%`
+            });
+        }
+
+        if (filtros?.especialidadeId) {
+            query.andWhere('especialidade.id = :especialidadeId', {
+                especialidadeId: filtros.especialidadeId
+            });
+        }
+
+        const [registros, total] = await query
+            .orderBy('medico.nome', 'ASC')
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
+
+        return {
+            registros,
+            total
+        };
+    }
+
+    // Buscar médico pelo ID
+    async buscarPorId(id: string): Promise<Medico | null> {
+        return this.repository.findOne({
+            where: { id },
+            relations: {
+                especialidade: true
+            }
+        });
+    }
+
+    // Buscar médico pelo CRM
+    async buscarPorCRM(crm: string): Promise<Medico | null> {
+        return this.repository.findOneBy({ crm });
+    }
+
+    // Criar médico
+    async criar(dados: Partial<Medico>): Promise<Medico> {
+        const medico = this.repository.create(dados);
+        return this.repository.save(medico);
+    }
+
+    // Atualizar médico
+    async atualizar(medico: Medico): Promise<Medico> {
+        return this.repository.save(medico);
+    }
+
+    // Excluir médico
+    async excluir(medico: Medico): Promise<void> {
+        await this.repository.remove(medico);
+    }
+
+    async existePorEspecialidade(especialidadeId: string): Promise<boolean> {
+        const quantidade = await this.repository.count({
+            where: {
+                especialidade: {
+                    id: especialidadeId
+                }
+            }
+        });
+        return quantidade > 0;
+    }
+}

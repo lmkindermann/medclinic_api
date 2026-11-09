@@ -4,10 +4,25 @@ import { Especialidade } from '../entities/especialidade';
 export class EspecialidadeRepository {
     private repository = AppDataSource.getRepository(Especialidade);
 
-    async listar(): Promise<Especialidade[]> {
+    /* async listar(): Promise<Especialidade[]> {
         return this.repository.find({
             order: { nome: 'ASC' }
         });
+    } */
+    async listar(page: number, limit: number): Promise<{
+        registros: Especialidade[];
+        total: number;
+    }> {
+
+        const [registros, total] = await this.repository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit
+        });
+
+        return {
+            registros,
+            total
+        };
     }
 
     async buscarPorId(id: string): Promise<Especialidade | null> {
@@ -32,4 +47,24 @@ export class EspecialidadeRepository {
     async excluir(especialidade: Especialidade): Promise<void> {
         await this.repository.remove(especialidade);
     }
+
+    async relatorioPorMedico() {
+        const resultado = await this.repository
+            .createQueryBuilder('especialidade')
+            .leftJoin('especialidade.medicos', 'medico')
+            .select('especialidade.id', 'especialidadeId')
+            .addSelect('especialidade.nome', 'nome')
+            .addSelect('COUNT(medico.id)', 'total')
+            .groupBy('especialidade.id')
+            .addGroupBy('especialidade.nome')
+            .orderBy('especialidade.nome', 'ASC')
+            .getRawMany();
+
+        return resultado.map(item => ({
+            especialidadeId: item.especialidadeId,
+            nome: item.nome,
+            total: Number(item.total)
+        }));
+    }
+
 }

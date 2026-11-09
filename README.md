@@ -1,159 +1,94 @@
-# MedClinic API 🏥
+# MedClinic API
 
-API REST desenvolvida em **Node.js + TypeScript** para a etapa inicial do projeto **MedClinic**, uma aplicação voltada ao gerenciamento de uma clínica médica.
+API REST para gerenciamento de uma clínica médica, desenvolvida como projeto avaliativo do módulo de Desenvolvimento Back-End com Node.js.
 
-> **Etapa atual:** Autenticação e Autorização
+O sistema permite gerenciar usuários, especialidades médicas, médicos, pacientes e consultas, com autenticação JWT, controle de acesso por perfil e relatórios administrativos.
 
-Nesta primeira etapa, o foco está na construção da base de **autenticação e autorização de usuários**, que servirá como ponto de partida para as próximas funcionalidades do sistema.
+## Tecnologias utilizadas
 
----
+- **Node.js** e **TypeScript**
+- **Express** – construção da API REST
+- **TypeORM** – mapeamento objeto-relacional
+- **PostgreSQL** – banco de dados
+- **JWT (JSON Web Token)** – autenticação
+- **bcryptjs** – hash de senhas
+- **Winston** – registro de logs
+- **Swagger / OpenAPI** – documentação da API
+- **CORS** – controle de origens permitidas
+- **express-rate-limit** – limitação de requisições
 
-## 📋 Sumário
+## Funcionalidades
 
-- [Sobre o projeto](#-sobre-o-projeto)
-- [Escopo desta etapa](#-escopo-desta-etapa)
-- [Tecnologias utilizadas](#-tecnologias-utilizadas)
-- [Requisitos para execução](#-requisitos-para-execução)
-- [Configuração do banco de dados](#-configuração-do-banco-de-dados)
-- [Variáveis de ambiente](#-variáveis-de-ambiente)
-- [Instalação e execução](#-instalação-e-execução)
-- [Arquitetura do projeto](#-arquitetura-do-projeto)
-- [Fluxo de autenticação](#-fluxo-de-autenticação)
-- [Endpoints](#-endpoints)
-- [Perfis de acesso](#-perfis-de-acesso)
-- [Segurança](#-segurança)
-- [Testando a API](#-testando-a-api)
-- [Próximas etapas](#-próximas-etapas)
+### Autenticação e controle de acesso
+- Cadastro de usuários com senha protegida por hash.
+- Login com autenticação JWT e expiração de token.
+- Consulta dos dados do usuário autenticado.
+- Controle de acesso baseado em papéis (RBAC).
 
----
+### Gerenciamento
+- CRUD de especialidades médicas.
+- CRUD de médicos, vinculados a especialidades.
+- CRUD de pacientes, com validação de CPF e dados cadastrais.
+- Agendamento, consulta, realização e cancelamento de consultas.
+- Validação de disponibilidade de médicos e prevenção de conflitos de horários.
 
-## 📌 Sobre o projeto
+### Consultas e relatórios
+- Filtros de consultas por período, status, médico e paciente.
+- Filtros de médicos e pacientes.
+- Paginação de resultados.
+- Relatórios de consultas por status.
+- Relatórios de consultas por médico.
+- Relatórios de médicos por especialidade.
+- Relatório de pacientes com consultas agendadas.
 
-O MedClinic API foi desenvolvido como projeto avaliativo do módulo de **Back End Node**, utilizando conceitos de desenvolvimento de APIs REST, TypeScript, Express, TypeORM, PostgreSQL, autenticação com JWT e controle de acesso baseado em perfis.
+## Perfis de acesso
 
-A ideia desta etapa foi construir uma base funcional e organizada para que, futuramente, possam ser adicionados os módulos relacionados ao funcionamento da clínica, como médicos, pacientes, especialidades e consultas.
+O sistema utiliza dois perfis:
 
----
-
-## 🎯 Escopo desta etapa
-
-Nesta versão foram implementadas funcionalidades relacionadas a:
-
-- ✅ Cadastro de usuários;
-- ✅ Validação de e-mail;
-- ✅ Armazenamento seguro da senha utilizando hash;
-- ✅ Login utilizando e-mail e senha;
-- ✅ Geração de token JWT;
-- ✅ Validação do token através de middleware;
-- ✅ Identificação do usuário autenticado;
-- ✅ Perfis de acesso;
-- ✅ Endpoint de verificação administrativa;
-- ✅ Conexão com PostgreSQL utilizando TypeORM.
-
-> **Importante:** as funcionalidades de negócio da clínica, como cadastro de médicos, pacientes, especialidades e consultas, **não fazem parte desta etapa** e poderão ser adicionadas posteriormente.
-
----
-
-## 🛠️ Tecnologias utilizadas
-
-| Tecnologia | Utilização |
+| Perfil | Permissões |
 |---|---|
-| **Node.js** | Ambiente de execução da aplicação |
-| **TypeScript** | Linguagem utilizada no desenvolvimento |
-| **Express.js** | Framework para criação da API REST |
-| **TypeORM** | ORM para comunicação com o banco de dados |
-| **PostgreSQL** | Banco de dados relacional |
-| **jsonwebtoken** | Geração e validação dos tokens JWT |
-| **bcryptjs** | Criação e comparação do hash das senhas |
-| **dotenv** | Carregamento das variáveis de ambiente |
-| **reflect-metadata** | Suporte utilizado pelo TypeORM |
-| **ts-node-dev** | Execução da aplicação durante o desenvolvimento |
+| ADMIN | Acesso administrativo, gerenciamento completo e relatórios. |
+| ATENDENTE | Consulta de dados e operações permitidas de atendimento, pacientes e consultas. |
 
-As dependências utilizadas pelo projeto estão definidas no arquivo `package.json`.
+As rotas protegidas exigem autenticação por token Bearer. As permissões são verificadas conforme o perfil do usuário.
 
----
+## Estrutura do projeto
 
-## 💻 Requisitos para execução
+A aplicação utiliza uma arquitetura em camadas, separando responsabilidades:
 
-Para executar o projeto localmente, é necessário ter instalado:
-
-- [Node.js](https://nodejs.org/)
-- npm
-- [PostgreSQL](https://www.postgresql.org/)
-- [Git](https://git-scm.com/)
-
-Também é necessário possuir acesso a um banco de dados PostgreSQL.
-
-As demais dependências do projeto são instaladas através do `npm install`.
-
----
-
-## 🗄️ Configuração do banco de dados
-
-O projeto utiliza o **PostgreSQL** como banco de dados e o **TypeORM** para realizar a comunicação entre a aplicação e o banco.
-
-A configuração da conexão é feita através de variáveis de ambiente, evitando que as credenciais do banco sejam colocadas diretamente no código.
-
-### Criação do banco
-
-No PostgreSQL, pode ser criado inicialmente o banco de dados:
-
-```sql
-CREATE DATABASE medclinic;
+```text
+src/
+├── config/
+│   ├── cors.ts
+│   ├── logger.ts
+│   └── swagger.ts
+├── controllers/
+├── database/
+│   ├── datasource.ts
+│   └── seeds/
+│       └── createAdmin.ts
+├── entities/
+├── middlewares/
+├── routes/
+├── services/
+├── utils/
+└── server.ts
 ```
 
-As estruturas utilizadas nesta etapa são gerenciadas pelo TypeORM.
+- **Entities:** representação das entidades e tabelas do banco de dados.
+- **Controllers:** tratamento das requisições e respostas HTTP.
+- **Services:** implementação das regras de negócio.
+- **Routes:** definição dos endpoints e permissões.
+- **Middlewares:** autenticação, autorização, logs HTTP e tratamento centralizado de erros.
+- **Config:** configurações de CORS, logs e documentação Swagger.
 
-A entidade `Usuario` representa a tabela de usuários e possui os campos:
+## Requisitos para execução
 
-- `id`
-- `nome`
-- `email`
-- `senha`
-- `categoria`
-- `criadoEm`
+- Node.js e npm instalados.
+- PostgreSQL local ou instância PostgreSQL remota.
+- Git para clonar o repositório.
 
-A senha é armazenada somente em formato de hash.
-
----
-
-## 🔐 Variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=sua_senha
-DB_DATABASE=medclinic
-DB_SSL=false
-
-JWT_SECRET=sua_chave_secreta
-JWT_EXPIRES_IN=1d
-
-PORT=3333
-```
-
-### Descrição das variáveis
-
-| Variável | Descrição |
-|---|---|
-| `DB_HOST` | Endereço do servidor PostgreSQL |
-| `DB_PORT` | Porta utilizada pelo PostgreSQL |
-| `DB_USERNAME` | Usuário do banco |
-| `DB_PASSWORD` | Senha do banco |
-| `DB_DATABASE` | Nome do banco utilizado pela aplicação |
-| `DB_SSL` | Define se a conexão utilizará SSL |
-| `JWT_SECRET` | Chave utilizada para assinar e validar os tokens JWT |
-| `JWT_EXPIRES_IN` | Tempo de expiração do token JWT |
-| `PORT` | Porta utilizada pela API |
-
-> ⚠️ **Atenção:** não versione o arquivo `.env` no GitHub quando ele contiver credenciais reais ou chaves utilizadas em produção.
-
----
-
-## 🚀 Instalação e execução
+## Instalação e configuração
 
 ### 1. Clonar o repositório
 
@@ -168,590 +103,184 @@ cd medclinic_api
 npm install
 ```
 
-### 3. Configurar o `.env`
+### 3. Configurar as variáveis de ambiente
 
-Crie o arquivo `.env` na raiz do projeto e informe as configurações do PostgreSQL e do JWT conforme apresentado na seção [Variáveis de ambiente](#-variáveis-de-ambiente).
+Crie uma cópia do arquivo de exemplo:
 
-### 4. Executar em desenvolvimento
+```bash
+cp .env.example .env
+```
+
+No Windows, também é possível copiar o arquivo manualmente pelo explorador de arquivos.
+
+Edite o `.env` com as configurações do seu ambiente.
+
+Principais variáveis:
+
+| Variável | Descrição |
+|---|---|
+| `PORT` | Porta de execução da API. |
+| `JWT_SECRET` | Chave secreta para assinatura dos tokens JWT. |
+| `JWT_EXPIRES_IN` | Tempo de validade do token. |
+| `DB_HOST` | Endereço do servidor PostgreSQL. |
+| `DB_PORT` | Porta do PostgreSQL. |
+| `DB_USERNAME` | Usuário do banco de dados. |
+| `DB_PASSWORD` | Senha do banco de dados. |
+| `DB_DATABASE` | Nome do banco de dados. |
+| `DB_SSL` | Habilita ou desabilita SSL. |
+| `ADMIN_NAME` | Nome do administrador inicial. |
+| `ADMIN_EMAIL` | E-mail do administrador inicial. |
+| `ADMIN_PASSWORD` | Senha do administrador inicial. |
+| `CORS_ORIGINS` | Lista de origens permitidas, separadas por vírgula. |
+| `LOG_LEVEL` | Nível de detalhamento dos logs. |
+| `RATE_LIMIT_WINDOW_MS` | Janela de tempo do limite global. |
+| `RATE_LIMIT_MAX` | Número máximo de requisições globais por janela. |
+| `AUTH_RATE_LIMIT_WINDOW_MS` | Janela de tempo do limite de autenticação. |
+| `AUTH_RATE_LIMIT_MAX` | Número máximo de tentativas de autenticação por janela. |
+
+**Banco de dados:** crie previamente um banco PostgreSQL vazio com o nome configurado em `DB_DATABASE`.
+
+O projeto utiliza TypeORM com sincronização automática das entidades (`synchronize: true`). Assim, a estrutura das tabelas é criada ou atualizada durante a inicialização da aplicação.
+
+Para PostgreSQL local, configure `DB_SSL=false`. Para a Aiven, utilize as credenciais fornecidas pelo serviço e configure `DB_SSL=true`.
+
+> A sincronização automática é utilizada neste projeto para facilitar a execução em ambiente de desenvolvimento. Em aplicações de produção, recomenda-se o uso de migrations.
+
+### 4. Criar o administrador inicial
+
+Após configurar o `.env`, execute:
+
+```bash
+npm run seed:admin
+```
+
+O script utiliza as variáveis `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` para criar o usuário administrador inicial.
+
+A operação verifica a existência do e-mail antes de criar um novo registro.
+
+### 5. Executar a aplicação
+
+Para desenvolvimento:
 
 ```bash
 npm run dev
 ```
 
-A API será iniciada na porta configurada pela variável `PORT`.
-
-Por exemplo:
-
-```text
-Servidor rodando na porta 3333
-```
-
-### 5. Gerar o build
+Para compilar o projeto:
 
 ```bash
 npm run build
 ```
 
-### 6. Executar a versão compilada
+Para executar a versão compilada:
 
 ```bash
 npm start
 ```
 
----
-
-## 🏗️ Arquitetura do projeto
-
-A aplicação foi organizada de forma modular, separando as responsabilidades entre rotas, controllers, entidade, middleware, banco de dados e funções auxiliares.
+Por padrão, a API estará disponível em:
 
 ```text
-medclinic_api/
-│
-├── src/
-│   ├── controllers/
-│   │   ├── AdminController.ts
-│   │   ├── AuthController.ts
-│   │   └── UserController.ts
-│   │
-│   ├── database/
-│   │   └── datasource.ts
-│   │
-│   ├── entities/
-│   │   └── user.ts
-│   │
-│   ├── middlewares/
-│   │   └── authMiddleware.ts
-│   │
-│   ├── routes/
-│   │   ├── index.ts
-│   │   ├── auth.routes.ts
-│   │   ├── user.routes.ts
-│   │   └── admin.routes.ts
-│   │
-│   ├── utils/
-│   │   └── jwt.ts
-│   │
-│   └── server.ts
-│
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
+http://localhost:3333
 ```
 
-### Responsabilidade das principais pastas
+A porta pode ser alterada pela variável `PORT`.
 
-#### `controllers`
+## Documentação da API
 
-Responsáveis por receber as requisições HTTP, processar as entradas e retornar as respostas da API.
-
-- `AuthController`: cadastro e login;
-- `UserController`: informações do usuário autenticado;
-- `AdminController`: endpoint de verificação administrativa.
-
-#### `database`
-
-Centraliza a configuração da conexão com o PostgreSQL através do TypeORM.
-
-#### `entities`
-
-Contém as entidades utilizadas pelo TypeORM.
-
-Nesta etapa, a principal entidade é `Usuario`.
-
-#### `middlewares`
-
-Contém funcionalidades executadas durante o processamento das requisições.
-
-O `authMiddleware` é responsável por verificar o token JWT enviado no header `Authorization`.
-
-#### `routes`
-
-Define os endpoints disponíveis na API e direciona cada requisição para seu respectivo controller.
-
-Principais grupos de rotas:
+A documentação interativa está disponível através do Swagger:
 
 ```text
-/auth
-/user
-/admin
+http://localhost:3333/api-docs
 ```
 
-#### `utils`
+O Swagger apresenta os endpoints, parâmetros, modelos de dados, respostas HTTP e permite testar as operações autenticadas utilizando o botão **Authorize** com um token JWT.
 
-Contém funções auxiliares utilizadas pela aplicação.
+## Principais endpoints
 
-Nesta etapa, o arquivo `jwt.ts` concentra funções relacionadas à criação e validação dos tokens JWT.
-
----
-
-## 🔄 Fluxo de autenticação
-
-O fluxo básico de autenticação da aplicação pode ser representado da seguinte forma:
-
-```text
-                 ┌───────────────┐
-                 │    Cliente    │
-                 └───────┬───────┘
-                         │
-                         │ POST /auth/register/user
-                         ▼
-                 ┌───────────────┐
-                 │    Cadastro   │
-                 │   do usuário  │
-                 └───────┬───────┘
-                         │
-                         │ senha → bcrypt hash
-                         ▼
-                 ┌───────────────┐
-                 │  PostgreSQL   │
-                 └───────┬───────┘
-                         │
-                         │ POST /auth/login
-                         ▼
-                 ┌───────────────┐
-                 │ Validação das │
-                 │  credenciais   │
-                 └───────┬───────┘
-                         │
-                         │ JWT
-                         ▼
-                 ┌───────────────┐
-                 │ Cliente recebe│
-                 │     token     │
-                 └───────┬───────┘
-                         │
-                         │ Authorization: Bearer <token>
-                         ▼
-                 ┌───────────────┐
-                 │ authMiddleware│
-                 └───────┬───────┘
-                         │
-                  ┌──────┴──────┐
-                  │             │
-              inválido        válido
-                  │             │
-                  ▼             ▼
-             HTTP 401     Rota protegida
-```
-
----
-
-# 🔌 Endpoints
-
-## 1. Cadastro de usuário
-
-### `POST /auth/register/user`
-
-Realiza o cadastro de um novo usuário.
-
-Por padrão, os usuários cadastrados por esta rota recebem o perfil:
-
-```text
-ATENDENTE
-```
-
-### Requisição
-
-```http
-POST /auth/register/user
-Content-Type: application/json
-```
-
-```json
-{
-  "nome": "João da Silva",
-  "email": "joao.silva@example.com",
-  "senha": "Senha123"
-}
-```
-
-### Parâmetros
-
-| Campo | Tipo | Obrigatório |
+| Recurso | Método | Endpoint |
 |---|---|---|
-| `nome` | string | Sim |
-| `email` | string | Sim |
-| `senha` | string | Sim |
+| Autenticação | POST | `/auth/register/user` |
+| Autenticação | POST | `/auth/login` |
+| Usuário autenticado | GET | `/user/me` |
+| Administração | GET | `/admin/ping` |
+| Especialidades | GET / POST | `/especialidades` |
+| Especialidade específica | GET / PUT / DELETE | `/especialidades/:id` |
+| Médicos | GET / POST | `/medicos` |
+| Médico específico | GET / PUT / DELETE | `/medicos/:id` |
+| Pacientes | GET / POST | `/pacientes` |
+| Paciente específico | GET / PUT / DELETE | `/pacientes/:id` |
+| Consultas | GET / POST | `/consultas` |
+| Consulta específica | GET | `/consultas/:id` |
+| Atendimento | PATCH | `/consultas/:id/atendimento` |
+| Cancelamento | PATCH | `/consultas/:id/cancelamento` |
 
-### Resposta — sucesso
+Os relatórios administrativos estão disponíveis sob o prefixo `/relatorios`. Consulte o Swagger para visualizar todos os endpoints e seus respectivos parâmetros.
 
-**HTTP 201 Created**
+## Segurança e tratamento de erros
 
-```json
-{
-  "id": "c2d8c5c1-1234-4567-8901-123456789abc",
-  "nome": "João da Silva",
-  "email": "joao.silva@example.com",
-  "categoria": "ATENDENTE"
-}
-```
+A aplicação implementa:
 
-A senha não é retornada na resposta.
+- Senhas armazenadas utilizando hash com bcryptjs.
+- Autenticação JWT com validação de token e expiração.
+- Controle de acesso por perfil (ADMIN e ATENDENTE).
+- Middleware centralizado de tratamento de erros.
+- Respostas padronizadas para erros HTTP.
+- Validações de dados e regras de negócio.
+- CORS com origens explicitamente configuradas.
+- Rate limiting global e específico para autenticação.
 
-### E-mail já cadastrado
+Entre os códigos HTTP utilizados estão `400`, `401`, `403`, `404`, `409`, `429` e `500`.
 
-**HTTP 400 Bad Request**
+## Sistema de logs
 
-```json
-{
-  "erro": "E-mail já cadastrado"
-}
-```
+O Winston é utilizado para registrar eventos da aplicação.
 
-### E-mail inválido
+Os arquivos são gerados no diretório `logs/`:
 
-**HTTP 400 Bad Request**
+- `logs/combined.log`: registro geral da aplicação.
+- `logs/error.log`: registro de erros.
 
-```json
-{
-  "erro": "E-mail inválido"
-}
-```
+Os níveis de log podem ser configurados através da variável `LOG_LEVEL`:
 
-### Campos obrigatórios ausentes
+- `error`
+- `warn`
+- `info`
+- `http`
+- `debug`
 
-**HTTP 400 Bad Request**
+O diretório de logs não é versionado no Git.
 
-```json
-{
-  "erro": "nome, email e senha são obrigatórios."
-}
-```
+## Credenciais de demonstração
 
----
+O administrador inicial é criado através do script de seed.
 
-## 2. Login
+- **E-mail:** `admin@medclinic.com`
+- **Senha:** utilizar o valor configurado em `ADMIN_PASSWORD` no ambiente de demonstração.
 
-### `POST /auth/login`
+Não utilize credenciais reais ou senhas pessoais no repositório.
 
-Realiza a autenticação de um usuário cadastrado.
+## Planejamento e acompanhamento
 
-### Requisição
+O desenvolvimento foi organizado em branches por funcionalidade, com integração das implementações na branch `development`.
 
-```http
-POST /auth/login
-Content-Type: application/json
-```
+**Quadro de tarefas:** [Acompanhar o desenvolvimento](https://trello.com/b/XDXFRTfk/medclinic-api)
 
-```json
-{
-  "email": "joao.silva@example.com",
-  "senha": "Senha123"
-}
-```
+## Melhorias futuras
 
-### Resposta — sucesso
+Algumas evoluções possíveis para o projeto:
 
-**HTTP 200 OK**
+- Implementação de testes automatizados com Jest.
+- Containerização da aplicação com Docker.
+- Deploy da API em ambiente de nuvem.
+- Utilização de migrations para gerenciamento da evolução do banco de dados.
+- Ampliação da cobertura de testes e validações.
 
-```json
-{
-  "token": "<JWT_GERADO_PELA_API>",
-  "usuario": {
-    "id": "c2d8c5c1-1234-4567-8901-123456789abc",
-    "nome": "João da Silva",
-    "email": "joao.silva@example.com",
-    "categoria": "ATENDENTE"
-  }
-}
-```
+## Autor
 
-O token retornado deve ser utilizado nas próximas requisições que exigirem autenticação.
+**Lucas Kindermann**
 
-### Credenciais inválidas
+Tecnólogo em Eletrônica | Desenvolvedor Hardware & Software
 
-**HTTP 401 Unauthorized**
-
-```json
-{
-  "erro": "Credenciais Inválidas"
-}
-```
-
-A mesma resposta é utilizada quando o usuário não é encontrado ou quando a senha informada não corresponde ao hash armazenado.
-
----
-
-## 3. Consultar usuário autenticado
-
-### `GET /user/me`
-
-Retorna os dados do usuário identificado pelo token JWT.
-
-### Header
-
-```http
-Authorization: Bearer <JWT>
-```
-
-### Exemplo com cURL
-
-```bash
-curl -X GET http://localhost:3333/user/me \
-  -H "Authorization: Bearer <JWT>"
-```
-
-### Resposta — sucesso
-
-**HTTP 200 OK**
-
-```json
-{
-  "id": "c2d8c5c1-1234-4567-8901-123456789abc",
-  "nome": "João da Silva",
-  "email": "joao.silva@example.com",
-  "categoria": "ATENDENTE",
-  "criadoEm": "2026-09-10T14:30:00.000Z"
-}
-```
-
-A senha não é incluída na resposta.
-
-### Token não informado
-
-**HTTP 401 Unauthorized**
-
-```json
-{
-  "erro": "Token não informado."
-}
-```
-
-### Token mal formatado
-
-**HTTP 401 Unauthorized**
-
-```json
-{
-  "erro": "Token mal formatado."
-}
-```
-
-### Token inválido ou expirado
-
-**HTTP 401 Unauthorized**
-
-```json
-{
-  "erro": "Token inválido ou expirado"
-}
-```
-
----
-
-## 4. Endpoint de verificação administrativa
-
-### `GET /admin/ping`
-
-Endpoint utilizado para demonstrar o acesso relacionado ao perfil administrativo.
-
-### Header
-
-```http
-Authorization: Bearer <JWT>
-```
-
-### Exemplo com cURL
-
-```bash
-curl -X GET http://localhost:3333/admin/ping \
-  -H "Authorization: Bearer <JWT>"
-```
-
-### Resposta
-
-**HTTP 200 OK**
-
-```json
-{
-  "message": "Usuário administrador identificado. Acesso autorizado!"
-}
-```
-
-> Este endpoint faz parte da etapa de autenticação/autorização e serve como ponto de verificação do acesso administrativo.
-
----
-
-# 👤 Perfis de acesso
-
-A aplicação possui dois perfis de usuário:
-
-| Perfil | Descrição |
-|---|---|
-| `ADMIN` | Perfil administrativo |
-| `ATENDENTE` | Perfil operacional utilizado pelos usuários cadastrados normalmente |
-
-Os perfis são definidos através do enum `UsuarioRole`:
-
-```typescript
-export enum UsuarioRole {
-    ATENDENTE = 'ATENDENTE',
-    ADMIN = 'ADMIN'
-}
-```
-
-### ATENDENTE
-
-O perfil `ATENDENTE` é atribuído por padrão aos usuários criados através do endpoint de cadastro.
-
-É o perfil pensado para usuários que utilizarão a aplicação nas atividades operacionais, com permissões mais restritas.
-
-### ADMIN
-
-O perfil `ADMIN` representa o usuário administrativo e é utilizado para demonstrar o controle de acesso administrativo da API.
-
----
-
-# 🔒 Segurança
-
-Algumas medidas de segurança foram aplicadas nesta etapa.
-
-## Senhas
-
-As senhas não são armazenadas diretamente no banco de dados.
-
-Durante o cadastro, a senha é transformada em hash utilizando `bcryptjs`:
-
-```text
-Senha informada
-      ↓
-bcrypt.hash()
-      ↓
-Hash armazenado no PostgreSQL
-```
-
-Durante o login, a senha informada é comparada com o hash armazenado utilizando `bcrypt.compare()`.
-
-## JWT
-
-Após um login válido, a aplicação gera um token JWT contendo informações necessárias para identificar o usuário e seu perfil.
-
-O tempo de expiração do token pode ser configurado através de:
-
-```env
-JWT_EXPIRES_IN=1d
-```
-
-A chave utilizada para assinar o token é definida através de:
-
-```env
-JWT_SECRET=chave-secreta
-```
-
-Essas informações devem permanecer fora do código-fonte.
-
----
-
-# 🧪 Testando a API
-
-Os testes podem ser realizados utilizando ferramentas como:
-
-- Postman;
-- Insomnia;
-- Thunder Client;
-- cURL.
-
-Uma sequência simples para verificar o funcionamento da aplicação é apresentada abaixo.
-
-### 1. Cadastrar um usuário
-
-```http
-POST /auth/register/user
-```
-
-```json
-{
-  "nome": "Usuário Teste",
-  "email": "usuario.teste@example.com",
-  "senha": "Senha123"
-}
-```
-
-### 2. Fazer login
-
-```http
-POST /auth/login
-```
-
-```json
-{
-  "email": "usuario.teste@example.com",
-  "senha": "Senha123"
-}
-```
-
-Copie o `token` retornado pela API.
-
-### 3. Consultar o usuário autenticado
-
-```http
-GET /user/me
-```
-
-Adicionar o token no header:
-
-```http
-Authorization: Bearer <token>
-```
-
-### 4. Testar uma requisição sem token
-
-```http
-GET /user/me
-```
-
-Resultado esperado:
-
-```http
-401 Unauthorized
-```
-
-### 5. Testar um token inválido
-
-```http
-GET /user/me
-Authorization: Bearer token-invalido
-```
-
-Resultado esperado:
-
-```http
-401 Unauthorized
-```
-
-Esses testes permitem verificar o fluxo básico de cadastro, login, geração do JWT e proteção das rotas.
-
----
-
-# 🔮 Próximas etapas
-
-Esta versão representa somente a base de **autenticação e autorização** do MedClinic API.
-
-A partir desta estrutura, o projeto poderá evoluir para incluir os módulos de negócio da clínica, como:
-
-- 🩺 Especialidades;
-- 👨‍⚕️ Médicos;
-- 🧑‍🤝‍🧑 Pacientes;
-- 📅 Consultas;
-- 📊 Demais funcionalidades relacionadas ao gerenciamento da clínica.
-
-A ideia é aproveitar a estrutura criada nesta etapa como base para essas próximas funcionalidades.
-
----
-
-## 📚 Considerações finais
-
-O principal objetivo desta etapa foi colocar em prática os conceitos estudados no módulo de Back End, principalmente a construção de uma API REST utilizando **TypeScript, Express e TypeORM**, além da integração com **PostgreSQL**.
-
-Também foi possível trabalhar conceitos importantes de segurança, como armazenamento de senhas utilizando hash, autenticação através de JWT e identificação do perfil do usuário durante as requisições.
-
-O projeto ainda pode receber melhorias e novas funcionalidades nas próximas etapas, mas a estrutura atual fornece uma base para a continuidade do desenvolvimento do **MedClinic API**.
-
----
-
-### 👨‍💻 Projeto
-
-**MedClinic API**
-
-Desenvolvido por **Lucas Kindermann** como projeto avaliativo do módulo de Back End Node.
+- GitHub: https://github.com/lmkindermann
+- LinkedIn: https://linkedin.com/in/lmkindermann/
