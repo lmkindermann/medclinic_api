@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { AuthController } from "../controllers/AuthController"
+import { authRateLimiter } from '../middlewares/rateLimiter';
 
 const authRoutes = Router()
 const authController = new AuthController()
@@ -54,7 +55,12 @@ const authController = new AuthController()
  *       500:
  *         description: Erro interno do servidor
  */
-authRoutes.post("/register/user", (req, res) => authController.registrarUsuario(req, res))
+//authRoutes.post("/register/user", (req, res) => authController.registrarUsuario(req, res))
+authRoutes.post(
+    "/register/user",
+    authRateLimiter,
+    (req, res) => authController.registrarUsuario(req, res)
+);
 
 /**
  * @swagger
@@ -99,6 +105,11 @@ authRoutes.post("/register/user", (req, res) => authController.registrarUsuario(
  *       500:
  *         description: Erro interno do servidor
  */
-authRoutes.post("/login", (req, res) => authController.login(req, res))
+//authRoutes.post("/login", (req, res) => authController.login(req, res))
+authRoutes.post(
+    "/login",
+    authRateLimiter,
+    (req, res) => authController.login(req, res)
+);
 
 export default authRoutes
